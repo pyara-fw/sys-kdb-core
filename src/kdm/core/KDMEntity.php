@@ -23,12 +23,15 @@ class KDMEntity extends ModelElement
 
 
     /**
-     *
-     *
      * @var KDMEntityList
      */
     protected $group;
 
+
+    /**
+     * @var KDMEntity
+     */
+    protected $owner;
 
 
     /**
@@ -66,5 +69,29 @@ class KDMEntity extends ModelElement
             $this->group = new KDMEntityList();
         }
         return $this->group;
+    }
+
+    /**
+     * Get the value of owner
+     *
+     * @return  KDMEntity
+     */
+    public function getOwner()
+    {
+        return $this->owner;
+    }
+
+    /**
+     * Set the value of owner
+     *
+     * @param  KDMEntity  $owner
+     *
+     * @return  self
+     */
+    public function setOwner(KDMEntity $owner)
+    {
+        $this->owner = $owner;
+
+        return $this;
     }
 }

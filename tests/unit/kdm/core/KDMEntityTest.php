@@ -40,4 +40,23 @@ class KDMEntityTest extends TestCase
             $this->assertEquals($k, $item->getName());
         }
     }
+
+
+    public function test_entity_with_owner()
+    {
+        define('OWNER_NAME', 'Owner');
+
+        $owner = new KDMEntity();
+        $owner->setName(OWNER_NAME);
+
+        $entity = new KDMEntity();
+
+        // Before assign an owner, the entity's owner is null
+        $this->assertNull($entity->getOwner());
+
+        $entity->setOwner($owner);
+
+        // After assign the owner
+        $this->assertEquals(OWNER_NAME, $entity->getOwner()->getName());
+    }
 }
