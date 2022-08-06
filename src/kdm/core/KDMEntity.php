@@ -2,7 +2,13 @@
 
 namespace SysKDB\kdm\core;
 
+use SysKDB\kdm\ext\KDMEntityList;
+
 /**
+ *
+ * A KDMEntity can be either an atomic element, a container for some KDMEntities, or
+ * a group of some KDMEntities
+ *
  * @author Eduardo Luz <eduardo @ eduardo-luz.com>
  * @package sysKDB
  */
@@ -15,6 +21,13 @@ class KDMEntity extends ModelElement
      */
     protected $name;
 
+
+    /**
+     *
+     *
+     * @var KDMEntityList
+     */
+    protected $group;
 
 
 
@@ -40,5 +53,18 @@ class KDMEntity extends ModelElement
         $this->name = $name;
 
         return $this;
+    }
+
+    /**
+     *
+     *
+     * @return KDMEntityList
+     */
+    public function getGroup(): KDMEntityList
+    {
+        if (!$this->group) {
+            $this->group = new KDMEntityList();
+        }
+        return $this->group;
     }
 }

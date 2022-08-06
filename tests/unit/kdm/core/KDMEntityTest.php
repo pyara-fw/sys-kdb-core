@@ -23,4 +23,21 @@ class KDMEntityTest extends TestCase
 
         $this->assertEquals($expectedName, $actualName);
     }
+
+    public function test_entity_with_group()
+    {
+        $entity = new KDMEntity();
+
+        for ($i=0;$i<10;$i++) {
+            $e = new KDMEntity();
+            $e->setName($i);
+            $entity->getGroup()->add($e);
+        }
+
+        $iterator = $entity->getGroup();
+
+        foreach ($iterator as $k => $item) {
+            $this->assertEquals($k, $item->getName());
+        }
+    }
 }
