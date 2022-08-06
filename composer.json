@@ -1,0 +1,7 @@
+{
+    "name": "pyara/sys-kdb-core",
+    "description": "System Knowledge Database Core, based on KDM (Knowledge Discovery Metamodel;  ISO/IEC 19506)",
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    }
+}
