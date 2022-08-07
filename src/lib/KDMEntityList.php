@@ -1,6 +1,6 @@
 <?php
 
-namespace SysKDB\kdm\ext;
+namespace SysKDB\lib;
 
 use ArrayIterator;
 use Iterator;

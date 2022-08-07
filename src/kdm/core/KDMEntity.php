@@ -2,7 +2,7 @@
 
 namespace SysKDB\kdm\core;
 
-use SysKDB\kdm\ext\KDMEntityList;
+use SysKDB\lib\KDMEntityList;
 
 /**
  *
