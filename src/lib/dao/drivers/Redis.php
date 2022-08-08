@@ -6,6 +6,9 @@ use SysKDB\lib\dao\DataAccessObject;
 use SysKDB\lib\exception\ConnectionException;
 use SysKDB\lib\HasConfig;
 use SysKDB\lib\dao\PersistentObject;
+use SysKDB\lib\dao\PersistentObjectFactory;
+use SysKDB\lib\exception\ConnectionNotEstablishedException;
+use SysKDB\lib\exception\InvalidArgumentException;
 use SysKDB\lib\UniqueId;
 
 /**
@@ -26,6 +29,12 @@ class Redis extends DataAccessObject
         $this->setConfig($config);
     }
 
+    protected function requiredConnection()
+    {
+        if (!$this->connection) {
+            throw new ConnectionNotEstablishedException("There is no active connection");
+        }
+    }
 
     /**
      *
@@ -55,18 +64,29 @@ class Redis extends DataAccessObject
      *
      * @return \SysKDB\lib\dao\PersistentObject
      */
-    public function getObjectById(string $oid): PersistentObject
+    public function getObjectById(string $oid): ?PersistentObject
     {
+        $this->requiredConnection();
+
+        $serializedObject = $this->connection->get($oid);
+        if (!$serializedObject) {
+            return null;
+        }
+        // $object = $serializedObject
+        $object = PersistentObjectFactory::make($serializedObject);
+        return $object;
     }
 
     /**
      *
      * @param PersistentObject $object
      *
-     * @return PersistentObject
+     * @return ?PersistentObject
      */
     public function storeObject(PersistentObject $object): PersistentObject
     {
+        $this->requiredConnection();
+
         if (!$object->getOid()) {
             $oid = UniqueId::get();
             $object->setOid($oid);
@@ -86,5 +106,7 @@ class Redis extends DataAccessObject
      */
     public function removeObjectById(string $oid): bool
     {
+        $this->requiredConnection();
+        return $this->connection->del($oid);
     }
 }

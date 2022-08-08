@@ -10,4 +10,6 @@ interface PersistentObject
     public function serialize(): string;
 
     public function unserialize(string $str);
+
+    public function equals($toCompare): bool;
 }
