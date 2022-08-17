@@ -41,6 +41,8 @@ class PHP
     const STATE_SCRIPT_PHP_ROOT = 'STATE_SCRIPT_PHP_ROOT';
     const STATE_FUNCTION_DEFINE_RETURN_TYPE = 'STATE_FUNCTION_DEFINE_RETURN_TYPE';
     const STATE_CLASS_MEMBER_METHOD_PARMS_DEFINE_RETURN_TYPE = 'STATE_CLASS_MEMBER_METHOD_PARMS_DEFINE_RETURN_TYPE';
+    const STATE_START_INCLUDE = 'STATE_START_INCLUDE';
+    const STATE_PATH_INCLUDE = 'STATE_PATH_INCLUDE';
 
     
     protected $transitions = [];
@@ -88,7 +90,7 @@ class PHP
                 $currentClassName = $parms[KDB_TOKEN][1];
                 $parms[KDB_FSM]->setVar('current_class_name',$currentClassName);
                 // echo "\n Found the class $currentClassName \n";
-                $parms[KDB_FSM]->deactivateState(self::STATE_SCRIPT_PHP_ROOT);
+                $parms[KDB_FSM]->deactivateState(self::STATE_SCRIPT_PHP_ROOT);                
             }
         );
 
@@ -124,7 +126,17 @@ class PHP
                     'implements' => $parms[KDB_FSM]->getVar('interfaces',[]),
                     'type' => $parms[KDB_FSM]->getVar('current_class_type','class'),
                 ];
+
+                if ($parms[KDB_FSM]->getVar('current_class_abstract')) {
+                    $metaClass['is_abstract'] = true;
+                    $parms[KDB_FSM]->setVar('current_class_abstract',null);
+                }
+                
+                
+
                 $this->hashSet('declared_classes',$currentClassName, $metaClass);
+
+                
 
             
             }
@@ -382,6 +394,59 @@ class PHP
         );
 
 
+        $actionRecordAbstract = new Action(
+            function ($parms) {
+                $parms[KDB_FSM]->setVar('current_class_abstract',true);
+            }
+        );
+
+        $actionSaveIncludeType = new Action(
+            function ($parms) {
+                $includeType = $parms[KDB_TOKEN][1];
+                $parms[KDB_FSM]->setVar('current_include_type',$includeType);
+                $parms[KDB_FSM]->setVar('current_include_path',null);
+                $parms[KDB_FSM]->setVar('previous_piece',null);
+            }
+        );
+
+        $actionSaveIncludePathPiece = new Action(
+            function ($parms) {
+
+                if (is_array($parms[KDB_TOKEN])) {
+                    $piece = $parms[KDB_TOKEN][1];
+                } else {
+                    $piece = $parms[KDB_TOKEN];
+                }
+                
+                $previousPiece = $parms[KDB_FSM]->getVar('previous_piece','');
+                if ($previousPiece != $piece) {
+                    $currentPath = $parms[KDB_FSM]->getVar('current_include_path','');
+                    $currentPath .= $piece;
+                    $parms[KDB_FSM]->setVar('current_include_path',$currentPath);
+                }
+                $parms[KDB_FSM]->setVar('previous_piece',$piece);                
+            }
+        );
+
+        $actionSaveInclude = new Action(
+            function ($parms) {
+                $includeType = $parms[KDB_FSM]->getVar('current_include_type');
+
+                $currentPath = $parms[KDB_FSM]->getVar('current_include_path','');
+
+                $metaInclude = [
+                    'type' => $includeType,
+                    'path' => $currentPath
+                ];
+
+                $parms[KDB_FSM]->pushArray('includes', $metaInclude);
+                $parms[KDB_FSM]->setVar('current_include_path',null);
+                $parms[KDB_FSM]->setVar('current_include_type',null);
+                $parms[KDB_FSM]->setVar('previous_piece',null);
+            }
+        );
+
+
         $this->add(self::INITIAL_STATE, self::STARTED_SCRIPT_PHP, new ConditionTokenId(T_OPEN_TAG), $actionStarting);
         $this->add(self::INITIAL_STATE, self::STOPPED_SCRIPT_PHP, new ConditionTokenId(T_CLOSE_TAG), $actionStopping);
 
@@ -392,6 +457,7 @@ class PHP
     
         
 
+        $this->add(self::INITIAL_STATE, self::INITIAL_STATE, new ConditionTokenId(T_ABSTRACT), $actionRecordAbstract);
         $this->add(self::INITIAL_STATE, self::STATE_BUILDING_CLASS, new ConditionTokenId(T_CLASS), $actionRecordClassType);
         $this->add(self::INITIAL_STATE, self::STATE_BUILDING_CLASS, new ConditionTokenId(T_INTERFACE), $actionRecordClassType);
         $this->add(self::INITIAL_STATE, self::STATE_BUILDING_CLASS, new ConditionTokenId(T_TRAIT), $actionRecordClassType);
@@ -465,6 +531,23 @@ class PHP
         $this->add(self::STATE_START_FUNCTION_PARMS, self::STATE_FUNCTION_DEFINE_RETURN_TYPE, new ConditionTokenLiteral(':'));
         $this->add(self::STATE_FUNCTION_DEFINE_RETURN_TYPE, self::STATE_START_FUNCTION_PARMS, new ConditionTokenId(T_STRING), $actionFunctionStoreReturnType);
 
+
+        $this->add(self::STATE_SCRIPT_PHP_ROOT, self::STATE_START_INCLUDE, new ConditionTokenId(T_INCLUDE), $actionSaveIncludeType);
+        $this->add(self::STATE_SCRIPT_PHP_ROOT, self::STATE_START_INCLUDE, new ConditionTokenId(T_INCLUDE_ONCE), $actionSaveIncludeType);
+        $this->add(self::STATE_SCRIPT_PHP_ROOT, self::STATE_START_INCLUDE, new ConditionTokenId(T_REQUIRE), $actionSaveIncludeType);
+        $this->add(self::STATE_SCRIPT_PHP_ROOT, self::STATE_START_INCLUDE, new ConditionTokenId(T_REQUIRE_ONCE), $actionSaveIncludeType);
+
+        $this->add(self::STATE_START_INCLUDE, self::STATE_PATH_INCLUDE, new ConditionTokenId(T_DIR), $actionSaveIncludePathPiece);
+        $this->add(self::STATE_START_INCLUDE, self::STATE_PATH_INCLUDE, new ConditionTokenId(T_CONSTANT_ENCAPSED_STRING), $actionSaveIncludePathPiece);
+
+        $this->add(self::STATE_PATH_INCLUDE, self::STATE_PATH_INCLUDE, new ConditionTokenId(T_DIR), $actionSaveIncludePathPiece);
+        $this->add(self::STATE_PATH_INCLUDE, self::STATE_PATH_INCLUDE, new ConditionTokenId(T_CONSTANT_ENCAPSED_STRING), $actionSaveIncludePathPiece);
+        $this->add(self::STATE_PATH_INCLUDE, self::STATE_PATH_INCLUDE, new ConditionTokenId(T_WHITESPACE), $actionSaveIncludePathPiece);
+        $this->add(self::STATE_PATH_INCLUDE, self::STATE_PATH_INCLUDE, new ConditionTokenLiteral('.'), $actionSaveIncludePathPiece);
+
+        $this->add(self::STATE_PATH_INCLUDE, self::STATE_SCRIPT_PHP_ROOT, new ConditionTokenLiteral(';'), $actionSaveInclude);
+
+        // includes
         // $this->add(self::INITIAL_STATE, self::STATE_BUILDING_,  new ConditionTokenLiteral('{'), $actionIncrementBrackets);
 
     }

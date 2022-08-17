@@ -31,12 +31,13 @@ class PHPClassesTest extends PHPTestBase {
     public function providerGetClassDetails() {
         return [
             ['class MyClass {}', ['MyClass'=>['name' => 'MyClass']],],
-            ['class MyClass extends MyParent {}', 
+            ['abstract class MyClass extends MyParent {}', 
                 ['MyClass'=>
                     [
                         'name' => 'MyClass',
                         'extends' => 'MyParent',
-                        'type' => 'class'
+                        'type' => 'class',
+                        'is_abstract' => true
                     ]
                 ],
             ],
