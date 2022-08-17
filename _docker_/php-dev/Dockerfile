@@ -33,5 +33,6 @@ COPY ./tests/* /app/tests
 COPY ./composer.* /app/
 COPY ./phpunit.* /app/
 
+COPY _docker_/php-dev/50_xdebug.ini /etc/php7/conf.d/
 
 ENTRYPOINT ["sleep","infinity"]
