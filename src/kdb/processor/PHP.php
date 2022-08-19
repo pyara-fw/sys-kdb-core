@@ -56,6 +56,8 @@ class PHP
     public function __construct()
     {
 
+        $this->setVar('current_line',1);
+
         $actionStarting = new Action( function ($parms=[]) { 
             // echo "\nStarting script\n";
             $parms[KDB_FSM]->activateState(self::STATE_SCRIPT_PHP_ON);
@@ -125,6 +127,8 @@ class PHP
                     'extends' => $parms[KDB_FSM]->getVar('extension_class_name',''),
                     'implements' => $parms[KDB_FSM]->getVar('interfaces',[]),
                     'type' => $parms[KDB_FSM]->getVar('current_class_type','class'),
+                    'starting_line' => $parms[KDB_FSM]->getVar('current_line'),
+                    //$parms[KDB_FSM]->getVar('current_class_line'),
                 ];
 
                 if ($parms[KDB_FSM]->getVar('current_class_abstract')) {
@@ -147,9 +151,14 @@ class PHP
                 $counter = $parms[KDB_FSM]->getVar('brackets',0);
                 $counter--;
                 $parms[KDB_FSM]->setVar('brackets',$counter);
+                $currentLine = $parms[KDB_FSM]->getVar('current_line');
+
                 if ($counter == 0) {
                     $currentClassName = $parms[KDB_FSM]->getVar('current_class_name','');
-                    // echo "\n Reached final of class $currentClassName ";
+                    $metaClass = $this->hashGet('declared_classes',$currentClassName);
+                    $metaClass['ending_line'] = $currentLine ;
+                    $this->hashSet('declared_classes',$currentClassName, $metaClass);
+
                     $parms[KDB_FSM]->setVar('interfaces',[]);
                     $parms[KDB_FSM]->setVar('extension_class_name',null);
 
@@ -219,7 +228,10 @@ class PHP
                     $metaClass['const'] = [];
                 }
                 $constName = $parms[KDB_FSM]->getVar('const_name');
-                $metaClass['const'][$constName] = $constValue ;
+                if (!isset($metaClass['const'][$constName])) {
+                    $metaClass['const'][$constName] = [];
+                }
+                $metaClass['const'][$constName]['value'] = $constValue ;
                 $this->hashSet('declared_classes',$currentClassName, $metaClass);
                 $parms[KDB_FSM]->setVar('const_name',null);
             }
@@ -304,7 +316,7 @@ class PHP
                 
                 $currentClassName = $parms[KDB_FSM]->getVar('current_class_name','');
                 $metaClass = $parms[KDB_FSM]->hashGet('declared_classes',$currentClassName);
-                $varScope = $parms[KDB_FSM]->getVar('current_member_scope');
+                $memberScope = $parms[KDB_FSM]->getVar('current_member_scope','public');
                 $methodName = $parms[KDB_FSM]->getVar('current_member_name');
 
                 if (!isset($metaClass['methods'])) {
@@ -314,7 +326,7 @@ class PHP
                     $metaClass['methods'][$methodName] = [];
                 }
 
-                $metaClass['methods'][$methodName]['scope'] = $varScope;                
+                $metaClass['methods'][$methodName]['scope'] = $memberScope;                
 
                 $this->hashSet('declared_classes',$currentClassName, $metaClass);
                 // $parms[KDB_FSM]->setVar('current_member_scope',null);                
@@ -390,6 +402,7 @@ class PHP
             function ($parms) {
                 $classType = $parms[KDB_TOKEN][1];
                 $parms[KDB_FSM]->setVar('current_class_type',$classType);
+                $parms[KDB_FSM]->setVar('current_class_line',$parms[KDB_FSM]->getVar('current_line',1));
             }
         );
 
@@ -397,6 +410,7 @@ class PHP
         $actionRecordAbstract = new Action(
             function ($parms) {
                 $parms[KDB_FSM]->setVar('current_class_abstract',true);
+                $parms[KDB_FSM]->setVar('current_class_line',$parms[KDB_FSM]->getVar('current_line',1));
             }
         );
 
@@ -445,6 +459,24 @@ class PHP
                 $parms[KDB_FSM]->setVar('previous_piece',null);
             }
         );
+
+        $actionCheckNewLines = new Action(
+            function ($parms) {
+                $text = $parms[KDB_TOKEN][1];
+                if (strlen($text) == 12 && substr($text,0,3) === "'[<" && substr($text,-3) === ">]'") { 
+                // if (strpos($text,"\n") !== false) {
+                    $currentLine = intval(substr($text,3,-3));
+                    // $countLines = count(explode("\n", $text)) -1;
+                    // $currentLine = intval($parms[KDB_FSM]->getVar('current_line',1)) + $countLines;
+                    $parms[KDB_FSM]->setVar('current_line',$currentLine);
+                }
+            }
+        );
+
+
+        $this->add(self::INITIAL_STATE, null,  new ConditionTokenLiteral('}'), $actionDecrementBrackets);
+        $this->add(self::INITIAL_STATE, null,  new ConditionTokenLiteral('{'), $actionIncrementBrackets);
+        $this->add(self::INITIAL_STATE, null,  new ConditionTokenId(T_CONSTANT_ENCAPSED_STRING), $actionCheckNewLines);
 
 
         $this->add(self::INITIAL_STATE, self::STARTED_SCRIPT_PHP, new ConditionTokenId(T_OPEN_TAG), $actionStarting);
@@ -516,10 +548,6 @@ class PHP
         $this->add( self::STATE_START_CLASS_MEMBER_ATTRIBUTE_VALUE, self::STATE_START_CLASS_MEMBER_ATTRIBUTE_VALUE , new ConditionTokenId(T_STATIC), $actionStartClassMemberAttributeValue);
         $this->add( self::STATE_START_CLASS_MEMBER_ATTRIBUTE_VALUE ,self::STATE_BODY_CLASS, new ConditionTokenLiteral(';'), $actionSaveClassMemberAttribute);
         $this->add( self::STATE_START_CLASS_MEMBER_ATTRIBUTE ,self::STATE_BODY_CLASS, new ConditionTokenLiteral(';'), $actionSaveClassMemberAttribute);
-
-
-        $this->add(self::INITIAL_STATE, null,  new ConditionTokenLiteral('}'), $actionDecrementBrackets);
-        $this->add(self::INITIAL_STATE, null,  new ConditionTokenLiteral('{'), $actionIncrementBrackets);
 
 
         $this->add(self::STATE_SCRIPT_PHP_ROOT, self::STATE_START_FUNCTION, new ConditionTokenId(T_FUNCTION));
@@ -665,6 +693,9 @@ class PHP
 
 
     public function parse($contents) {
+
+        $contents = $this->assignLineNumber($contents);
+
         $tokens = token_get_all($contents);
 
         $auxTokens = $tokens;
@@ -677,6 +708,33 @@ class PHP
         
 
         return $tokens;
+    }
+
+    public function assignLineNumber($contents) {
+
+        $lines = explode("\n",$contents);
+        $l = 0;
+        $numberingActive = false;
+        for ($i=0;$i<count($lines);$i++) {
+            $l++;
+            $currLine = $lines[$i];
+            if ($numberingActive == false) {
+                $pos = strpos($currLine, '<'."?php");
+                if ($pos !== false) {
+                    $numberingActive = true;
+                    $lines[$i] = substr($currLine,0,$pos+5). sprintf("\t'[<%06d>]'\t",$l).substr($currLine,$pos+5);        
+                    continue;
+                }
+                continue;
+            } elseif (strpos($currLine, '?'.">") !== false) {
+                $numberingActive = false;
+            }            
+            $lines[$i] = sprintf("\t'[<%06d>]'\t",$l).$currLine;            
+        }
+        $contents = implode("\n",$lines);
+    
+
+        return $contents;
     }
 
 }

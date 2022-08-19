@@ -37,15 +37,23 @@ class PHPClassesTest extends PHPTestBase {
                         'name' => 'MyClass',
                         'extends' => 'MyParent',
                         'type' => 'class',
-                        'is_abstract' => true
+                        'is_abstract' => true,
+                        'starting_line' => 1,
                     ]
                 ],
             ],
-            ['class MyClass implements A {}', 
+            ["// line 1
+// line 2
+// line 3
+              class MyClass implements A { // line 4
+                // line 5
+              } // line 6 ", 
                 ['MyClass'=>
                     [
                         'name' => 'MyClass',
-                        'implements' => ['A']
+                        'implements' => ['A'],                        
+                        'starting_line' => 4,
+                        'ending_line' => 6,
                     ]
                 ],
             ],
@@ -117,10 +125,10 @@ class PHPClassesTest extends PHPTestBase {
                 [
                     'MyClass' => [
                         'const' => [
-                            'CONST1' => '1',
-                            'CONST2' => '2',
-                            'CONST3' => 'SOME_LITERAL',
-                            'CONST4' => '"ABC"',
+                            'CONST1' => ['value' => '1'],
+                            'CONST2' => ['value' => '2'],
+                            'CONST3' => ['value' => 'SOME_LITERAL'],
+                            'CONST4' => ['value' => '"ABC"'],
                         ]
                     ]
                 ]
@@ -174,6 +182,8 @@ class PHPClassesTest extends PHPTestBase {
                     protected function myFunc() : string {
                         // 
                     }
+
+                    function myFunc2() : Something { }
                 }',
                 [
                     'MyClass' => [
@@ -181,6 +191,10 @@ class PHPClassesTest extends PHPTestBase {
                             'myFunc' => [
                                 'scope' => 'protected',
                                 'return_type' => 'string'
+                            ],
+                            'myFunc2' => [
+                                'scope' => 'public',
+                                'return_type' => 'Something'
                             ]
                         ]
                     ]
