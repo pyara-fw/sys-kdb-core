@@ -451,19 +451,6 @@ class PHP extends ProcessorBase
             }
         );
 
-        // $actionRegisterStaticCall = new Action(
-        //     function ($parms) {
-        //         $identifier = $parms[KDB_FSM]->getVar('identifier');
-        //         $invoker = $parms[KDB_FSM]->getVar('invoker');
-        //         if ($invoker) {
-        //             //
-        //         } elseif ($identifier) {
-        //             $parms[KDB_FSM]->setVar('invoker',$identifier);                    
-        //             $parms[KDB_FSM]->activateState(self::STATE_CALL_STATIC);
-        //         }
-        //         $parms[KDB_FSM]->setVar('operator','::');
-        //     }
-        // );
 
         $actionRegisterCall = new Action(
             function ($parms) {
@@ -668,19 +655,6 @@ class PHP extends ProcessorBase
             }
         );
 
-        // $actionRegisterStaticCall = new Action(
-        //     function ($parms) {
-        //         $identifier = $parms[KDB_FSM]->getVar('identifier');
-        //         $invoker = $parms[KDB_FSM]->getVar('invoker');
-        //         if ($invoker) {
-        //             //
-        //         } elseif ($identifier) {
-        //             $parms[KDB_FSM]->setVar('invoker',$identifier);                    
-        //             $parms[KDB_FSM]->activateState(self::STATE_CALL_STATIC);
-        //         }
-        //         $parms[KDB_FSM]->setVar('operator','::');
-        //     }
-        // );
 
         $actionRegisterCall = new Action(
             function ($parms) {
@@ -689,22 +663,11 @@ class PHP extends ProcessorBase
             }
         );
 
-/**
- *                     $metaFunction = $parms[KDB_FSM]->hashGet('declared_functions',$functionName);
-                    $metaFunction['ending_line'] = $currentLine;
-                    $parms[KDB_FSM]->hashSet('declared_functions',$functionName, $metaFunction);
-
- */
-
 
         $actionStartParameters = new Action(
             function ($parms) {
                 $functionName = $parms[KDB_FSM]->getVar('current_function_name');
-                // $currentClassName = $parms[KDB_FSM]->getVar('current_class_name','');
                 $metaFunction = $parms[KDB_FSM]->hashGet('declared_functions',$functionName);
-                // $metaClass = $parms[KDB_FSM]->hashGet('declared_classes',$currentClassName);
-
-                // $methodName = $parms[KDB_FSM]->getVar('current_member_name');
 
                 if (!isset($metaFunction['dependencies'])) {
                     $metaFunction['dependencies'] = [];
@@ -739,8 +702,6 @@ class PHP extends ProcessorBase
                 }
                 $metaFunction['dependencies'][] = $data;
                 $parms[KDB_FSM]->hashSet('declared_functions',$functionName, $metaFunction);
-                // $metaClass['methods'][$methodName]['dependencies'][] = $data;
-                // $parms[KDB_FSM]->hashSet('declared_classes',$currentClassName,$metaClass);
 
                 $parms[KDB_FSM]->setVar('arr_method_calls',[$nameDependency]);
             }
