@@ -56,7 +56,97 @@ class PHPClassMethodsTest extends PHPTestBase
                     ]
                 ]
             ],
-            
+            [
+                'class MyClass2 {
+
+                    protected function myFunc() : string {
+                        ClassName::staticMethod()->method2()
+                            ->method3();
+                    }
+                }',
+                [
+                    'MyClass2' => [
+                        'methods' => [
+                            'myFunc' => [
+                                'scope' => 'protected',
+                                'return_type' => 'string',
+                                'starting_line' => 3,
+                                'ending_line' => 6,
+                                'dependencies' => [
+                                    [
+                                        'name' => 'ClassName::staticMethod()',
+                                        'invoker' => 'ClassName',
+                                        'method' => 'staticMethod',
+                                        'line' => 4
+                                    ],
+                                    [
+                                        'name' => 'ClassName::staticMethod()->method2()',
+                                        'invoker' => 'ClassName::staticMethod()',
+                                        'method' => 'method2',
+                                        'line' => 4
+                                    ],
+                                    [
+                                        'name' => 'ClassName::staticMethod()->method2()->method3()',
+                                        'invoker' => 'ClassName::staticMethod()->method2()',
+                                        'method' => 'method3',
+                                        'line' => 5
+                                    ],
+                                ]
+                            ]
+                        ]
+                    ]
+
+                ]
+            ],
+            [
+                'class MyClass3 {
+
+                    protected function myFunc() : string {
+                        $object()
+                            ->method1()
+                            ->method2()
+                            ->method3();
+                    }
+                }',
+                [
+                    'MyClass3' => [
+                        'methods' => [
+                            'myFunc' => [
+                                'scope' => 'protected',
+                                'return_type' => 'string',
+                                'starting_line' => 3,
+                                'ending_line' => 8,
+                                'dependencies' => [
+                                    [
+                                        'name' => '$object()',
+                                        'function' => '$object',
+                                        'line' => 4
+                                    ],
+                                    [
+                                        'name' => '$object()->method1()',
+                                        'invoker' => '$object()',
+                                        'method' => 'method1',
+                                        'line' => 5
+                                    ],
+                                    [
+                                        'name' => '$object()->method1()->method2()',
+                                        'invoker' => '$object()->method1()',
+                                        'method' => 'method2',
+                                        'line' => 6
+                                    ],
+                                    [
+                                        'name' => '$object()->method1()->method2()->method3()',
+                                        'invoker' => '$object()->method1()->method2()',
+                                        'method' => 'method3',
+                                        'line' => 7
+                                    ],
+                                ]
+                            ]
+                        ]
+                    ]
+
+                ]
+            ],
 
         ];
     }
