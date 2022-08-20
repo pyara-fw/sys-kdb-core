@@ -448,23 +448,29 @@ class PHP extends ProcessorBase
         $actionStorePotentialIdentifier = new Action(
             function ($parms) {
                 $identifier = $parms[KDB_TOKEN][1];
-                $parms[KDB_FSM]->setVar('identifier',$identifier);
 
-                if ($parms[KDB_FSM]->isActiveState(self::STATE_CALL_STATIC)
-                || $parms[KDB_FSM]->isActiveState(self::STATE_CALL) ) {
-                    $parms[KDB_FSM]->setVar('called',$identifier);
-                }
+                $arr = $parms[KDB_FSM]->getVar('arr_method_calls',[]);
+                $arr[] = $identifier;
+                $parms[KDB_FSM]->setVar('arr_method_calls',$arr);
+                // $parms[KDB_FSM]->setVar('identifier',$identifier);
+
+
+
+                // if ($parms[KDB_FSM]->isActiveState(self::STATE_CALL_STATIC)
+                // || $parms[KDB_FSM]->isActiveState(self::STATE_CALL) ) {
+                //     $parms[KDB_FSM]->setVar('method',$identifier);
+                // }
             }
         );
 
         $actionRegisterStaticCall = new Action(
             function ($parms) {
                 $identifier = $parms[KDB_FSM]->getVar('identifier');
-                $caller = $parms[KDB_FSM]->getVar('caller');
-                if ($caller) {
+                $invoker = $parms[KDB_FSM]->getVar('invoker');
+                if ($invoker) {
                     //
                 } elseif ($identifier) {
-                    $parms[KDB_FSM]->setVar('caller',$identifier);                    
+                    $parms[KDB_FSM]->setVar('invoker',$identifier);                    
                     $parms[KDB_FSM]->activateState(self::STATE_CALL_STATIC);
                 }
                 $parms[KDB_FSM]->setVar('operator','::');
@@ -473,42 +479,85 @@ class PHP extends ProcessorBase
 
         $actionRegisterCall = new Action(
             function ($parms) {
-                $identifier = $parms[KDB_FSM]->getVar('identifier');
-                $caller = $parms[KDB_FSM]->getVar('caller');
-                if ($caller) {
-                    //
-                } elseif ($identifier) {
-                    $parms[KDB_FSM]->setVar('called',$identifier);                    
-                    $parms[KDB_FSM]->activateState(self::STATE_CALL);
-                }
-                $parms[KDB_FSM]->setVar('operator','->');
+                $operator = $parms[KDB_TOKEN][1];
+                // $identifier = $parms[KDB_FSM]->getVar('identifier');
+                // $invoker = $parms[KDB_FSM]->getVar('invoker');
+                // if ($invoker) {
+                //     //
+                // } elseif ($identifier) {
+                //     $parms[KDB_FSM]->setVar('method',$identifier);                    
+                //     $parms[KDB_FSM]->activateState(self::STATE_CALL);
+                // }
+                $parms[KDB_FSM]->setVar('operator',$operator);
             }
         );
 
         $actionStartParameters = new Action(
             function ($parms) {
-                $caller = $parms[KDB_FSM]->getVar('caller');
-                $called = $parms[KDB_FSM]->getVar('called');
-                $operator = $parms[KDB_FSM]->getVar('operator');
-                if ($caller && $called) {
+                $currentClassName = $parms[KDB_FSM]->getVar('current_class_name','');
+                $metaClass = $parms[KDB_FSM]->hashGet('declared_classes',$currentClassName);
+
+                $methodName = $parms[KDB_FSM]->getVar('current_member_name');
+
+                if (!isset($metaClass['methods'][$methodName]['dependencies'])) {
+                    $metaClass['methods'][$methodName]['dependencies'] = [];
+                }
+
+                $arr = $parms[KDB_FSM]->getVar('arr_method_calls',[]);
+                if (count($arr) == 1) {
+                    $nameDependency = $arr[0].'()';
                     $data = [
-                        'caller' => $caller,
-                        'called' => $called,
-                        'operator' => $operator
+                        'function' => $arr[0],
+                        'name' => $nameDependency,
+                        'line' => $parms[KDB_FSM]->getVar('current_line')
                     ];
 
-                    $currentClassName = $parms[KDB_FSM]->getVar('current_class_name','');
-                    $metaClass = $parms[KDB_FSM]->hashGet('declared_classes',$currentClassName);
-    
-                    $methodName = $parms[KDB_FSM]->getVar('current_member_name');
-    
-                    if (!isset($metaClass['methods'][$methodName]['dependencies'])) {
-                        $metaClass['methods'][$methodName]['dependencies'] = [];
-                    }
-                    $metaClass['methods'][$methodName]['dependencies'][] = $data;
-                    $parms[KDB_FSM]->setVar('caller', $caller . $operator . $called . '()');                    
-                    $parms[KDB_FSM]->activateState(self::STATE_CALL_STATIC);
+                } elseif (count($arr) == 2) {
+                    $invoker = $arr[0];
+                    $method = $arr[1];
+                    $operator = $parms[KDB_FSM]->getVar('operator');
+                    $nameDependency = $invoker.$operator.$method.'()';
+                    $data = [
+                        'invoker' => $invoker,
+                        'method' => $method,
+                        'name' => $nameDependency,
+                        'line' => $parms[KDB_FSM]->getVar('current_line')
+                    ];
+
                 }
+                $metaClass['methods'][$methodName]['dependencies'][] = $data;
+                $parms[KDB_FSM]->hashSet('declared_classes',$currentClassName,$metaClass);
+
+                $parms[KDB_FSM]->setVar('arr_method_calls',[]);
+
+                // $invoker = $parms[KDB_FSM]->getVar('invoker');
+                // $method = $parms[KDB_FSM]->getVar('method');
+                // $operator = $parms[KDB_FSM]->getVar('operator');
+                // $nameDependency = $invoker.$operator.$method.'()';
+                // if ($invoker && $method) {
+                //     $data = [
+                //         'invoker' => $invoker,
+                //         'method' => $method,
+                //         'operator' => $operator,
+                //         'name' => $nameDependency,
+                //         'line' => $parms[KDB_FSM]->getVar('current_line')
+                //     ];
+
+                //     $currentClassName = $parms[KDB_FSM]->getVar('current_class_name','');
+                //     $metaClass = $parms[KDB_FSM]->hashGet('declared_classes',$currentClassName);
+    
+                //     $methodName = $parms[KDB_FSM]->getVar('current_member_name');
+    
+                //     if (!isset($metaClass['methods'][$methodName]['dependencies'])) {
+                //         $metaClass['methods'][$methodName]['dependencies'] = [];
+                //     }
+                //     $metaClass['methods'][$methodName]['dependencies'][] = $data;
+                    
+                //     $parms[KDB_FSM]->hashSet('declared_classes',$currentClassName,$metaClass);
+
+                //     $parms[KDB_FSM]->setVar('invoker', $nameDependency);                    
+                //     $parms[KDB_FSM]->activateState(self::STATE_CALL_STATIC);
+                // }
             }
         );
 
@@ -517,8 +566,8 @@ class PHP extends ProcessorBase
                 // Save everything
 
                 // Reset
-                $parms[KDB_FSM]->setVar('caller',null);
-                $parms[KDB_FSM]->setVar('called',null);
+                $parms[KDB_FSM]->setVar('invoker',null);
+                $parms[KDB_FSM]->setVar('method',null);
                 $parms[KDB_FSM]->setVar('identifier',null);
                 $parms[KDB_FSM]->deactivateState(self::STATE_CALL_STATIC);
                 $parms[KDB_FSM]->deactivateState(self::STATE_CALL);
@@ -530,8 +579,8 @@ class PHP extends ProcessorBase
                 // Save everything
 
                 // Reset
-                $parms[KDB_FSM]->setVar('caller',null);
-                $parms[KDB_FSM]->setVar('called',null);
+                $parms[KDB_FSM]->setVar('invoker',null);
+                $parms[KDB_FSM]->setVar('method',null);
                 $parms[KDB_FSM]->setVar('identifier',null);
                 $parms[KDB_FSM]->deactivateState(self::STATE_CALL_STATIC);
                 $parms[KDB_FSM]->deactivateState(self::STATE_CALL);
@@ -539,8 +588,10 @@ class PHP extends ProcessorBase
         ); 
 
 
-        $this->add( self::STATE_START_CLASS_MEMBER_METHOD_BODY,self::STATE_START_CLASS_MEMBER_METHOD_BODY , new ConditionTokenId(T_STRING), $actionStorePotentialIdentifier);        
-        $this->add( self::STATE_START_CLASS_MEMBER_METHOD_BODY,self::STATE_START_CLASS_MEMBER_METHOD_BODY , new ConditionTokenId(T_DOUBLE_COLON), $actionRegisterStaticCall);
+        $this->add( self::STATE_START_CLASS_MEMBER_METHOD_BODY,self::STATE_START_CLASS_MEMBER_METHOD_BODY , new ConditionTokenId(T_VARIABLE), $actionStorePotentialIdentifier);        
+        $this->add( self::STATE_START_CLASS_MEMBER_METHOD_BODY,self::STATE_START_CLASS_MEMBER_METHOD_BODY , new ConditionTokenId(T_STRING), $actionStorePotentialIdentifier);
+        // $this->add( self::STATE_START_CLASS_MEMBER_METHOD_BODY,self::STATE_START_CLASS_MEMBER_METHOD_BODY , new ConditionTokenId(T_DOUBLE_COLON), $actionRegisterStaticCall);
+        $this->add( self::STATE_START_CLASS_MEMBER_METHOD_BODY,self::STATE_START_CLASS_MEMBER_METHOD_BODY , new ConditionTokenId(T_DOUBLE_COLON), $actionRegisterCall);
         $this->add( self::STATE_START_CLASS_MEMBER_METHOD_BODY,self::STATE_START_CLASS_MEMBER_METHOD_BODY , new ConditionTokenId(T_OBJECT_OPERATOR), $actionRegisterCall);
         $this->add( self::STATE_START_CLASS_MEMBER_METHOD_BODY,self::STATE_START_CLASS_MEMBER_METHOD_BODY , new ConditionTokenLiteral('('), $actionStartParameters);
         $this->add( self::STATE_START_CLASS_MEMBER_METHOD_BODY,self::STATE_START_CLASS_MEMBER_METHOD_BODY , new ConditionTokenLiteral(';'), $actionSaveAndResetCall);
