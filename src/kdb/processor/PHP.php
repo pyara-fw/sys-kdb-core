@@ -471,7 +471,16 @@ class PHP extends ProcessorBase
                 }
 
                 $arr = $parms[KDB_FSM]->getVar('arr_method_calls',[]);
-                if (count($arr) == 1) {
+
+                if ($parms[KDB_FSM]->getVar('new_instance')) {
+                    $nameDependency = $arr[0].'()';
+                    $data = [
+                        'class' => $arr[0],
+                        'name' => $nameDependency,
+                        'line' => $parms[KDB_FSM]->getVar('current_line')
+                    ];
+                    $parms[KDB_FSM]->setVar('new_instance',false);
+                } elseif (count($arr) == 1) {
                     $nameDependency = $arr[0].'()';
                     $data = [
                         'function' => $arr[0],
@@ -506,11 +515,44 @@ class PHP extends ProcessorBase
 
         $actionSaveAndResetCall = new Action( 
             function($parms) {
+
+                if ($parms[KDB_FSM]->getVar('new_instance')) {
+                    $currentClassName = $parms[KDB_FSM]->getVar('current_class_name','');
+                    $metaClass = $parms[KDB_FSM]->hashGet('declared_classes',$currentClassName);
+    
+                    $methodName = $parms[KDB_FSM]->getVar('current_member_name');
+    
+                    if (!isset($metaClass['methods'][$methodName]['dependencies'])) {
+                        $metaClass['methods'][$methodName]['dependencies'] = [];
+                    }
+        
+                    $arr = $parms[KDB_FSM]->getVar('arr_method_calls',[]);
+    
+                    $nameDependency = $arr[0].'()';
+                    $data = [
+                        'class' => $arr[0],
+                        'name' => $nameDependency,
+                        'line' => $parms[KDB_FSM]->getVar('current_line')
+                    ];
+                    $metaClass['methods'][$methodName]['dependencies'][] = $data;
+                    $parms[KDB_FSM]->hashSet('declared_classes',$currentClassName,$metaClass);
+        
+                    $parms[KDB_FSM]->setVar('new_instance',false);
+                }
+
+
                 $parms[KDB_FSM]->setVar('arr_method_calls',[]);
                 $parms[KDB_FSM]->setVar('operator',null);
             }
         ); 
 
+        $actionNewInstanceDetected = new Action( 
+            function($parms) {
+                $parms[KDB_FSM]->setVar('new_instance',true);
+                $parms[KDB_FSM]->setVar('arr_method_calls',[]);
+                $parms[KDB_FSM]->setVar('operator',null);
+            }
+        ); 
 
         $this->add( self::STATE_START_CLASS_MEMBER_METHOD_BODY,self::STATE_START_CLASS_MEMBER_METHOD_BODY , new ConditionTokenId(T_VARIABLE), $actionStorePotentialIdentifier);        
         $this->add( self::STATE_START_CLASS_MEMBER_METHOD_BODY,self::STATE_START_CLASS_MEMBER_METHOD_BODY , new ConditionTokenId(T_STRING), $actionStorePotentialIdentifier);
@@ -518,6 +560,9 @@ class PHP extends ProcessorBase
         $this->add( self::STATE_START_CLASS_MEMBER_METHOD_BODY,self::STATE_START_CLASS_MEMBER_METHOD_BODY , new ConditionTokenId(T_OBJECT_OPERATOR), $actionRegisterCall);
         $this->add( self::STATE_START_CLASS_MEMBER_METHOD_BODY,self::STATE_START_CLASS_MEMBER_METHOD_BODY , new ConditionTokenLiteral('('), $actionStartParameters);
         $this->add( self::STATE_START_CLASS_MEMBER_METHOD_BODY,self::STATE_START_CLASS_MEMBER_METHOD_BODY , new ConditionTokenLiteral(';'), $actionSaveAndResetCall);
+
+        $this->add( self::STATE_START_CLASS_MEMBER_METHOD_BODY,self::STATE_START_CLASS_MEMBER_METHOD_BODY , new ConditionTokenId(T_NEW), $actionNewInstanceDetected);
+        
     }
 
     protected function addClassMemberAttributeTransitions() {
@@ -674,7 +719,16 @@ class PHP extends ProcessorBase
                 }
 
                 $arr = $parms[KDB_FSM]->getVar('arr_method_calls',[]);
-                if (count($arr) == 1) {
+
+                if ($parms[KDB_FSM]->getVar('new_instance')) {
+                    $nameDependency = $arr[0].'()';
+                    $data = [
+                        'class' => $arr[0],
+                        'name' => $nameDependency,
+                        'line' => $parms[KDB_FSM]->getVar('current_line')
+                    ];
+                    $parms[KDB_FSM]->setVar('new_instance',false);
+                } elseif (count($arr) == 1) {
                     $nameDependency = $arr[0].'()';
                     $data = [
                         'function' => $arr[0],
@@ -709,6 +763,36 @@ class PHP extends ProcessorBase
 
         $actionSaveAndResetCall = new Action( 
             function($parms) {
+
+                if ($parms[KDB_FSM]->getVar('new_instance')) {
+                    $functionName = $parms[KDB_FSM]->getVar('current_function_name');
+                    $metaFunction = $parms[KDB_FSM]->hashGet('declared_functions',$functionName);
+    
+                    if (!isset($metaFunction['dependencies'])) {
+                        $metaFunction['dependencies'] = [];
+                    }
+    
+                    $arr = $parms[KDB_FSM]->getVar('arr_method_calls',[]);
+    
+                    $nameDependency = $arr[0].'()';
+                    $data = [
+                        'class' => $arr[0],
+                        'name' => $nameDependency,
+                        'line' => $parms[KDB_FSM]->getVar('current_line')
+                    ];
+                    $metaFunction['dependencies'][] = $data;
+                    $parms[KDB_FSM]->hashSet('declared_functions',$functionName, $metaFunction);
+    
+                    $parms[KDB_FSM]->setVar('new_instance',false);
+                }
+                $parms[KDB_FSM]->setVar('arr_method_calls',[]);
+                $parms[KDB_FSM]->setVar('operator',null);
+            }
+        ); 
+
+        $actionNewInstanceDetected = new Action( 
+            function($parms) {
+                $parms[KDB_FSM]->setVar('new_instance',true);
                 $parms[KDB_FSM]->setVar('arr_method_calls',[]);
                 $parms[KDB_FSM]->setVar('operator',null);
             }
@@ -721,6 +805,8 @@ class PHP extends ProcessorBase
         $this->add( self::STATE_START_FUNCTION_BODY,self::STATE_START_FUNCTION_BODY , new ConditionTokenId(T_OBJECT_OPERATOR), $actionRegisterCall);
         $this->add( self::STATE_START_FUNCTION_BODY,self::STATE_START_FUNCTION_BODY , new ConditionTokenLiteral('('), $actionStartParameters);
         $this->add( self::STATE_START_FUNCTION_BODY,self::STATE_START_FUNCTION_BODY , new ConditionTokenLiteral(';'), $actionSaveAndResetCall);
+
+        $this->add( self::STATE_START_FUNCTION_BODY,self::STATE_START_FUNCTION_BODY , new ConditionTokenId(T_NEW), $actionNewInstanceDetected);
 
     }
     

@@ -16,6 +16,9 @@ class PHPClassMethodsTest extends PHPTestBase
                         $object::staticMethod();
                         $object->normalMethod();
                         externalFunction();
+
+                        $x = new ClassName();
+                        $y = new ClassName2;                            
                     }
                 }',
                 [
@@ -25,7 +28,7 @@ class PHPClassMethodsTest extends PHPTestBase
                                 'scope' => 'protected',
                                 'return_type' => 'string',
                                 'starting_line' => 3,
-                                'ending_line' => 8,
+                                'ending_line' => 11,
                                 'dependencies' => [
                                     [
                                         'name' => 'ClassName::staticMethod()',
@@ -49,7 +52,17 @@ class PHPClassMethodsTest extends PHPTestBase
                                         'name' => 'externalFunction()',
                                         'function' => 'externalFunction',
                                         'line' => 7
-                                    ]
+                                    ],
+                                    [
+                                        'name' => 'ClassName()',
+                                        'class' => 'ClassName',
+                                        'line' => 9
+                                    ],
+                                    [
+                                        'name' => 'ClassName2()',
+                                        'class' => 'ClassName2',
+                                        'line' => 10
+                                    ],        
                                 ]
                             ],
                         ]

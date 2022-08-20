@@ -15,13 +15,16 @@ class PHPFunctionsTest extends PHPTestBase
                     ClassName::staticMethod();
                     $object::staticMethod();
                     $object->normalMethod();
-                    externalFunction();                    
+                    externalFunction();
+
+                    $x = new ClassName();
+                    $y = new ClassName2;
                 }',
                 [
                     'myFunc' => [
                         'return_type' => 'string',
                         'starting_line' => 1,
-                        'ending_line' => 6,
+                        'ending_line' => 9,
                         'dependencies' => [
                             [
                                 'name' => 'ClassName::staticMethod()',
@@ -45,7 +48,17 @@ class PHPFunctionsTest extends PHPTestBase
                                 'name' => 'externalFunction()',
                                 'function' => 'externalFunction',
                                 'line' => 5
-                            ]
+                            ],
+                            [
+                                'name' => 'ClassName()',
+                                'class' => 'ClassName',
+                                'line' => 7
+                            ],
+                            [
+                                'name' => 'ClassName2()',
+                                'class' => 'ClassName2',
+                                'line' => 8
+                            ],
                         ]
                     ],
                 ]
