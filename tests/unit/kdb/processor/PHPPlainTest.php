@@ -20,7 +20,7 @@ class PHPPlainTest extends PHPTestBase {
                 function sub($x,$y) {}
                 ',
                 [                    
-                    'add' => [],
+                    'add' => ['starting_line'=>5, 'ending_line'=>5],
                     'sub' => []                    
                 ]
             ],
@@ -28,7 +28,9 @@ class PHPPlainTest extends PHPTestBase {
                 'function mul(int $x, int $y): int {} ',
                 [
                     'mul' => [
-                        'return_type' => 'int'
+                        'return_type' => 'int',
+                        'starting_line' => 1,
+                        'ending_line' => 1
                     ]
                 ]
             ]

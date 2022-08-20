@@ -47,7 +47,9 @@ class PHPInterfacesTest extends PHPTestBase {
                         'methods' => [
                             'add' => [
                                 'scope' => 'public',
-                                'return_type' => 'int'
+                                'return_type' => 'int',
+                                'starting_line' => 7,
+                                'ending_line' => 7
                             ]
                         ]
                     ],
@@ -59,24 +61,26 @@ class PHPInterfacesTest extends PHPTestBase {
                 ],
             ],
 
-            // [
-            //     'class MyClass {
+            [
+                'class MyClass {
 
-            //         protected function myFunc() : string {
-            //             // 
-            //         }
-            //     }',
-            //     [
-            //         'MyClass' => [
-            //             'methods' => [
-            //                 'myFunc' => [
-            //                     'scope' => 'protected',
-            //                     'return_type' => 'string'
-            //                 ]
-            //             ]
-            //         ]
-            //     ]    
-            // ]
+                    protected function myFunc() : string {
+                        // 
+                    }
+                }',
+                [
+                    'MyClass' => [
+                        'methods' => [
+                            'myFunc' => [
+                                'scope' => 'protected',
+                                'return_type' => 'string',
+                                'starting_line' => 3,
+                                'ending_line' => 5
+                            ]
+                        ]
+                    ]
+                ]    
+            ]
 
         ];
     }

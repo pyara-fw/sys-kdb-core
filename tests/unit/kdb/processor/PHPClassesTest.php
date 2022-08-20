@@ -47,7 +47,8 @@ class PHPClassesTest extends PHPTestBase {
 // line 3
               class MyClass implements A { // line 4
                 // line 5
-              } // line 6 ", 
+              } // line 6 
+              ", 
                 ['MyClass'=>
                     [
                         'name' => 'MyClass',
@@ -190,11 +191,15 @@ class PHPClassesTest extends PHPTestBase {
                         'methods' => [
                             'myFunc' => [
                                 'scope' => 'protected',
-                                'return_type' => 'string'
+                                'return_type' => 'string',
+                                'starting_line' => 3,
+                                'ending_line' => 5
                             ],
                             'myFunc2' => [
                                 'scope' => 'public',
-                                'return_type' => 'Something'
+                                'return_type' => 'Something',
+                                'starting_line' => 7,
+                                'ending_line' => 7
                             ]
                         ]
                     ]
