@@ -55,6 +55,8 @@ class PHP extends ProcessorBase
         $this->addClassMemberAttributeTransitions();
 
         $this->addFunctionsTransitions();
+        $this->addFunctionBodyTransitions();
+
         $this->addIncludeTransitions();
 
         
@@ -449,19 +451,19 @@ class PHP extends ProcessorBase
             }
         );
 
-        $actionRegisterStaticCall = new Action(
-            function ($parms) {
-                $identifier = $parms[KDB_FSM]->getVar('identifier');
-                $invoker = $parms[KDB_FSM]->getVar('invoker');
-                if ($invoker) {
-                    //
-                } elseif ($identifier) {
-                    $parms[KDB_FSM]->setVar('invoker',$identifier);                    
-                    $parms[KDB_FSM]->activateState(self::STATE_CALL_STATIC);
-                }
-                $parms[KDB_FSM]->setVar('operator','::');
-            }
-        );
+        // $actionRegisterStaticCall = new Action(
+        //     function ($parms) {
+        //         $identifier = $parms[KDB_FSM]->getVar('identifier');
+        //         $invoker = $parms[KDB_FSM]->getVar('invoker');
+        //         if ($invoker) {
+        //             //
+        //         } elseif ($identifier) {
+        //             $parms[KDB_FSM]->setVar('invoker',$identifier);                    
+        //             $parms[KDB_FSM]->activateState(self::STATE_CALL_STATIC);
+        //         }
+        //         $parms[KDB_FSM]->setVar('operator','::');
+        //     }
+        // );
 
         $actionRegisterCall = new Action(
             function ($parms) {
@@ -502,7 +504,7 @@ class PHP extends ProcessorBase
                         'line' => $parms[KDB_FSM]->getVar('current_line')
                     ];
                 } else {
-                    $nameDependency = join($arr,' ; ');
+                    $nameDependency = implode(' ; ',$arr);
                     $data = json_encode([
                         'arr' => $arr,
                         'operator' => $parms[KDB_FSM]->getVar('operator')
@@ -512,7 +514,6 @@ class PHP extends ProcessorBase
                 $parms[KDB_FSM]->hashSet('declared_classes',$currentClassName,$metaClass);
 
                 $parms[KDB_FSM]->setVar('arr_method_calls',[$nameDependency]);
-
             }
         );
 
@@ -655,6 +656,113 @@ class PHP extends ProcessorBase
 
     }
 
+
+    protected function addFunctionBodyTransitions() {
+        $actionStorePotentialIdentifier = new Action(
+            function ($parms) {
+                $identifier = $parms[KDB_TOKEN][1];
+
+                $arr = $parms[KDB_FSM]->getVar('arr_method_calls',[]);
+                $arr[] = $identifier;
+                $parms[KDB_FSM]->setVar('arr_method_calls',$arr);
+            }
+        );
+
+        // $actionRegisterStaticCall = new Action(
+        //     function ($parms) {
+        //         $identifier = $parms[KDB_FSM]->getVar('identifier');
+        //         $invoker = $parms[KDB_FSM]->getVar('invoker');
+        //         if ($invoker) {
+        //             //
+        //         } elseif ($identifier) {
+        //             $parms[KDB_FSM]->setVar('invoker',$identifier);                    
+        //             $parms[KDB_FSM]->activateState(self::STATE_CALL_STATIC);
+        //         }
+        //         $parms[KDB_FSM]->setVar('operator','::');
+        //     }
+        // );
+
+        $actionRegisterCall = new Action(
+            function ($parms) {
+                $operator = $parms[KDB_TOKEN][1];
+                $parms[KDB_FSM]->setVar('operator',$operator);
+            }
+        );
+
+/**
+ *                     $metaFunction = $parms[KDB_FSM]->hashGet('declared_functions',$functionName);
+                    $metaFunction['ending_line'] = $currentLine;
+                    $parms[KDB_FSM]->hashSet('declared_functions',$functionName, $metaFunction);
+
+ */
+
+
+        $actionStartParameters = new Action(
+            function ($parms) {
+                $functionName = $parms[KDB_FSM]->getVar('current_function_name');
+                // $currentClassName = $parms[KDB_FSM]->getVar('current_class_name','');
+                $metaFunction = $parms[KDB_FSM]->hashGet('declared_functions',$functionName);
+                // $metaClass = $parms[KDB_FSM]->hashGet('declared_classes',$currentClassName);
+
+                // $methodName = $parms[KDB_FSM]->getVar('current_member_name');
+
+                if (!isset($metaFunction['dependencies'])) {
+                    $metaFunction['dependencies'] = [];
+                }
+
+                $arr = $parms[KDB_FSM]->getVar('arr_method_calls',[]);
+                if (count($arr) == 1) {
+                    $nameDependency = $arr[0].'()';
+                    $data = [
+                        'function' => $arr[0],
+                        'name' => $nameDependency,
+                        'line' => $parms[KDB_FSM]->getVar('current_line')
+                    ];
+
+                } elseif (count($arr) == 2) {
+                    $invoker = $arr[0];
+                    $method = $arr[1];
+                    $operator = $parms[KDB_FSM]->getVar('operator');
+                    $nameDependency = $invoker.$operator.$method.'()';
+                    $data = [
+                        'invoker' => $invoker,
+                        'method' => $method,
+                        'name' => $nameDependency,
+                        'line' => $parms[KDB_FSM]->getVar('current_line')
+                    ];
+                } else {
+                    $nameDependency = implode(' ; ',$arr);
+                    $data = json_encode([
+                        'arr' => $arr,
+                        'operator' => $parms[KDB_FSM]->getVar('operator')
+                    ],true);
+                }
+                $metaFunction['dependencies'][] = $data;
+                $parms[KDB_FSM]->hashSet('declared_functions',$functionName, $metaFunction);
+                // $metaClass['methods'][$methodName]['dependencies'][] = $data;
+                // $parms[KDB_FSM]->hashSet('declared_classes',$currentClassName,$metaClass);
+
+                $parms[KDB_FSM]->setVar('arr_method_calls',[$nameDependency]);
+            }
+        );
+
+        $actionSaveAndResetCall = new Action( 
+            function($parms) {
+                $parms[KDB_FSM]->setVar('arr_method_calls',[]);
+                $parms[KDB_FSM]->setVar('operator',null);
+            }
+        ); 
+
+
+        $this->add( self::STATE_START_FUNCTION_BODY,self::STATE_START_FUNCTION_BODY , new ConditionTokenId(T_VARIABLE), $actionStorePotentialIdentifier);        
+        $this->add( self::STATE_START_FUNCTION_BODY,self::STATE_START_FUNCTION_BODY , new ConditionTokenId(T_STRING), $actionStorePotentialIdentifier);
+        $this->add( self::STATE_START_FUNCTION_BODY,self::STATE_START_FUNCTION_BODY , new ConditionTokenId(T_DOUBLE_COLON), $actionRegisterCall);
+        $this->add( self::STATE_START_FUNCTION_BODY,self::STATE_START_FUNCTION_BODY , new ConditionTokenId(T_OBJECT_OPERATOR), $actionRegisterCall);
+        $this->add( self::STATE_START_FUNCTION_BODY,self::STATE_START_FUNCTION_BODY , new ConditionTokenLiteral('('), $actionStartParameters);
+        $this->add( self::STATE_START_FUNCTION_BODY,self::STATE_START_FUNCTION_BODY , new ConditionTokenLiteral(';'), $actionSaveAndResetCall);
+
+    }
+    
     protected function addIncludeTransitions() {
 
 
