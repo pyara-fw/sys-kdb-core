@@ -179,4 +179,34 @@ abstract class ProcessorBase
     {
         return $this->hashGet(static::VAR_DECLARED_FUNCTIONS, $functionName);
     }
+
+
+    /**
+     * @param string $contents
+     * @return void
+     */
+    public function parseAndProcess(string $contents)
+    {
+        $tokens = $this->parse($contents);
+        $this->processTokens($tokens);
+    }
+
+
+    /**
+     * @return array
+     */
+    public function getClasses(): array
+    {
+        $result = [];
+
+        $lsClasses = $this->getArrayDeclaredClassNames();
+
+        foreach ($lsClasses as $className) {
+            $arr = $this->getAssocClass($className);
+            $key = $arr['namespace'] . '\\' . $className;
+            $result[$key] = $arr;
+        }
+
+        return $result;
+    }
 }

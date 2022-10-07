@@ -328,6 +328,7 @@ class PHP extends ProcessorBase
             function ($parms) {
                 $scope = 'public';
                 switch ($parms[KDB_TOKEN][0]) {
+                    case T_VAR:
                     case T_PUBLIC:
                         $scope = 'public';
                         break;
@@ -347,6 +348,7 @@ class PHP extends ProcessorBase
         $this->add(self::STATE_BODY_CLASS, self::STATE_START_CLASS_MEMBER, new ConditionTokenId(T_PROTECTED), $actionStartClassMember);
         $this->add(self::STATE_BODY_CLASS, self::STATE_START_CLASS_MEMBER, new ConditionTokenId(T_PUBLIC), $actionStartClassMember);
         $this->add(self::STATE_BODY_CLASS, self::STATE_START_CLASS_MEMBER, new ConditionTokenId(T_PRIVATE), $actionStartClassMember);
+        $this->add(self::STATE_BODY_CLASS, self::STATE_START_CLASS_MEMBER, new ConditionTokenId(T_VAR), $actionStartClassMember);
     }
 
     protected function addClassMemberMethodTransitions()
@@ -589,6 +591,7 @@ class PHP extends ProcessorBase
         );
 
 
+        $this->add(self::STATE_START_CLASS_MEMBER, self::STATE_START_CLASS_MEMBER_ATTRIBUTE, new ConditionTokenId(T_VAR), $actionStartClassMemberAttribute);
         $this->add(self::STATE_START_CLASS_MEMBER, self::STATE_START_CLASS_MEMBER_ATTRIBUTE, new ConditionTokenId(T_VARIABLE), $actionStartClassMemberAttribute);
         $this->add(self::STATE_START_CLASS_MEMBER, self::STATE_START_CLASS_MEMBER, new ConditionTokenId(T_STRING), $actionStartClassMemberAttributeType);
 
