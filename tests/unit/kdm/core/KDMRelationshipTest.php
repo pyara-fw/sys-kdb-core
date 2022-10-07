@@ -45,5 +45,17 @@ class KDMRelationshipTest extends TestCase
                 $this->assertCount(1, $entity->getInbound());
             }
         }
+
+        // Except the element 0, all other elements have only inbound associations.
+        $entity = $lsEntities[1];
+        $lsInbound = $entity->getInbound();
+
+
+        // get the contents as an array
+        $list = current($lsInbound);
+        // get the first item
+        $relationship = reset($list);
+
+        $this->assertEquals($firstEntity, $relationship->getFrom());
     }
 }
