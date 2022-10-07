@@ -3,6 +3,8 @@
 namespace SysKDB\kdm\core;
 
 use SysKDB\lib\KDMEntityList;
+use SysKDB\lib\OwnershipEntityTrait;
+use SysKDB\lib\RelationshipEntityTrait;
 
 /**
  *
@@ -14,6 +16,9 @@ use SysKDB\lib\KDMEntityList;
  */
 class KDMEntity extends ModelElement
 {
+    use OwnershipEntityTrait;
+    use RelationshipEntityTrait;
+
     /**
      * Entity's name
      *
@@ -27,11 +32,6 @@ class KDMEntity extends ModelElement
      */
     protected $group;
 
-
-    /**
-     * @var KDMEntity
-     */
-    protected $owner;
 
 
     /**
@@ -69,29 +69,5 @@ class KDMEntity extends ModelElement
             $this->group = new KDMEntityList();
         }
         return $this->group;
-    }
-
-    /**
-     * Get the value of owner
-     *
-     * @return  KDMEntity
-     */
-    public function getOwner()
-    {
-        return $this->owner;
-    }
-
-    /**
-     * Set the value of owner
-     *
-     * @param  KDMEntity  $owner
-     *
-     * @return  self
-     */
-    public function setOwner(KDMEntity $owner)
-    {
-        $this->owner = $owner;
-
-        return $this;
     }
 }

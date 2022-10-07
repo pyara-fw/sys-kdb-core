@@ -54,9 +54,13 @@ class KDMEntityTest extends TestCase
         // Before assign an owner, the entity's owner is null
         $this->assertNull($entity->getOwner());
 
+        // Before set the entity's owner, the owner's ownedElements should be empty
+        $this->assertCount(0, $owner->getOwnedElements());
+
         $entity->setOwner($owner);
 
-        // After assign the owner
+        // After assign the owner, the owner's ownedElements should have only one element
         $this->assertEquals(OWNER_NAME, $entity->getOwner()->getName());
+        $this->assertCount(1, $owner->getOwnedElements());
     }
 }
