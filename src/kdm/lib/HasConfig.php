@@ -1,6 +1,6 @@
 <?php
 
-namespace SysKDB\lib;
+namespace SysKDB\kdm\lib;
 
 trait HasConfig
 {

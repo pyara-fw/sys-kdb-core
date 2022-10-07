@@ -2,9 +2,9 @@
 
 namespace SysKDB\kdm\core;
 
-use SysKDB\lib\KDMEntityList;
-use SysKDB\lib\OwnershipEntityTrait;
-use SysKDB\lib\RelationshipEntityTrait;
+use SysKDB\kdm\lib\KDMEntityList;
+use SysKDB\kdm\lib\OwnershipEntityTrait;
+use SysKDB\kdm\lib\RelationshipEntityTrait;
 
 /**
  *

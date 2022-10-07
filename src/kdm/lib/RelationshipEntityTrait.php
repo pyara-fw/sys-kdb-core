@@ -1,6 +1,8 @@
 <?php
 
-namespace SysKDB\lib;
+namespace SysKDB\kdm\lib;
+
+// use SysKDB\kdm\lib\KDMRelationshipList;
 
 trait RelationshipEntityTrait
 {

@@ -1,6 +1,8 @@
 <?php
 
-namespace SysKDB\lib;
+namespace SysKDB\kdm\lib;
+
+use SysKDB\lib\Constants;
 
 trait DoesCompare
 {
@@ -16,6 +18,9 @@ trait DoesCompare
     public function compareAttributesWithMe(array $attributes): bool
     {
         $myAttributes = get_object_vars($this);
+
+        // print_r([$myAttributes, $attributes]);
+        // exit;
 
         foreach ($myAttributes as $k => $v) {
             if ($k == Constants::CLASSNAME) {

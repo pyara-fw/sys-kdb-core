@@ -1,8 +1,9 @@
 <?php
 
-namespace SysKDB\lib;
+namespace SysKDB\kdm\lib;
 
 use SysKDB\kdm\core\KDMEntity;
+use SysKDB\kdm\lib\KDMEntityList;
 
 trait OwnershipEntityTrait
 {

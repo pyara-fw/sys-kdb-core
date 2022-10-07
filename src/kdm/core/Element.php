@@ -3,11 +3,10 @@
 namespace SysKDB\kdm\core;
 
 use SysKDB\kdb\KDB;
-use SysKDB\lib\Constants;
+use SysKDB\kdm\lib\HasOID as LibHasOID;
 use SysKDB\lib\dao\PersistentObject;
-use SysKDB\lib\DoesCompare;
-use SysKDB\lib\HasOID;
-use SysKDB\lib\DoesSerialize;
+use SysKDB\kdm\lib\DoesCompare;
+use SysKDB\kdm\lib\DoesSerialize;
 
 /**
  * @author Eduardo Luz <eduardo @ eduardo-luz.com>
@@ -15,7 +14,7 @@ use SysKDB\lib\DoesSerialize;
  */
 abstract class Element implements PersistentObject
 {
-    use HasOID;
+    use LibHasOID;
     use DoesSerialize;
     use DoesCompare;
 
