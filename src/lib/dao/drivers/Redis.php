@@ -73,7 +73,7 @@ class Redis extends DataAccessObject
             return null;
         }
         // $object = $serializedObject
-        $object = PersistentObjectFactory::make($serializedObject);
+        $object = PersistentObjectFactory::makeFromSerialized($serializedObject);
         return $object;
     }
 

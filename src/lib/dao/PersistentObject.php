@@ -12,4 +12,8 @@ interface PersistentObject
     public function unserialize(string $str);
 
     public function equals($toCompare): bool;
+
+
+    public function store(): PersistentObject;
+    public function remove(): bool;
 }
