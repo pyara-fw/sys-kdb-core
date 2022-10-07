@@ -5,10 +5,10 @@ namespace tests\unit\SysKDB\kdb\processor;
 require_once __DIR__.'/PHPTestBase.php';
 
 
-class PHPPlainTest extends PHPTestBase {
-
-
-    public function providerGetFunctions() {
+class PHPPlainTest extends PHPTestBase
+{
+    public function providerGetFunctions()
+    {
         return [
             [
                 'class MyClass {
@@ -19,9 +19,9 @@ class PHPPlainTest extends PHPTestBase {
 
                 function sub($x,$y) {}
                 ',
-                [                    
+                [
                     'add' => ['starting_line'=>5, 'ending_line'=>5],
-                    'sub' => []                    
+                    'sub' => []
                 ]
             ],
             [
@@ -40,35 +40,33 @@ class PHPPlainTest extends PHPTestBase {
 
 
     /**
-     * 
+     *
      * @dataProvider providerGetFunctions
      * @param [type] $snippet
      * @param [type] $expected
      * @return void
      */
-    public function test_get_functions($snippet, $expectedDetails) {
-
+    public function test_get_functions($snippet, $expectedDetails)
+    {
         $this->parseAndProcess($snippet);
 
 
-        $declaredFunctions = $this->processor->getArray('declared_function_names',[]);
+        $declaredFunctions = $this->processor->getArrayDeclaredFunctionNames();
 
         foreach ($declaredFunctions as $functionName) {
-            $details = $this->processor->hashGet('declared_functions',$functionName);
+            $details = $this->processor->getAssocFunction($functionName);
             $this->assertTrue(isset($expectedDetails[$functionName]));
             foreach ($expectedDetails[$functionName] as $key => $expectedValue) {
                 $this->assertArrayHasKey($key, $details);
                 $this->assertEquals($expectedValue, $details[$key]);
             }
         }
-
-
-
     }
 
 
 
-    public function providerGetIncludes() {
+    public function providerGetIncludes()
+    {
         return [
             [
                 '
@@ -91,16 +89,16 @@ class PHPPlainTest extends PHPTestBase {
 
 
     /**
-     * 
+     *
      * @dataProvider providerGetIncludes
      * @param [type] $snippet
      * @param [type] $expectedDetails
      * @return void
      */
-    public function test_get_includes($snippet, $expectedDetails) {
-
+    public function test_get_includes($snippet, $expectedDetails)
+    {
         $this->parseAndProcess($snippet);
-        $includes = $this->processor->getArray('includes',[]);
+        $includes = $this->processor->getArray('includes', []);
         $this->assertCount(count($expectedDetails), $includes);
         foreach ($expectedDetails as $k => $itemInclude) {
             $found = false;
@@ -110,8 +108,7 @@ class PHPPlainTest extends PHPTestBase {
                     break;
                 }
             }
-            $this->assertTrue($found,"Not found item $k (" . json_encode($itemInclude).")");
+            $this->assertTrue($found, "Not found item $k (" . json_encode($itemInclude).")");
         }
     }
-
 }

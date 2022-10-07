@@ -1,12 +1,13 @@
 <?php
+
 namespace tests\unit\SysKDB\kdb\processor;
 
 require_once __DIR__.'/PHPTestBase.php';
 
 class PHPClassMethodsTest extends PHPTestBase
 {
-
-    public function providerClassMethods() {
+    public function providerClassMethods()
+    {
         return [
             [
                 'class MyClass {
@@ -62,7 +63,7 @@ class PHPClassMethodsTest extends PHPTestBase
                                         'name' => 'ClassName2()',
                                         'class' => 'ClassName2',
                                         'line' => 10
-                                    ],        
+                                    ],
                                 ]
                             ],
                         ]
@@ -165,33 +166,27 @@ class PHPClassMethodsTest extends PHPTestBase
     }
 
     /**
-     * 
+     *
      * @dataProvider providerClassMethods
      * @param string $statement
      * @param array $expectedDetails
      * @return void
      */
-    public function test_class_methods(string $statement, array $expectedDetails) {
+    public function test_class_methods(string $statement, array $expectedDetails)
+    {
         $this->parseAndProcess($statement);
 
 
-        $declaredClasses = $this->processor->getArray('declared_class_names',[]);
+        $declaredClasses = $this->processor->getArrayDeclaredClassNames();
 
         foreach ($declaredClasses as $className) {
-            $details = $this->processor->hashGet('declared_classes',$className);
+            $details = $this->processor->getAssocClass($className);
+            //hashGet('declared_classes', $className);
             $this->assertTrue(isset($expectedDetails[$className]));
             foreach ($expectedDetails[$className] as $key => $expectedValue) {
                 $this->assertArrayHasKey($key, $details);
                 $this->assertEquals($expectedValue, $details[$key]);
             }
         }
-
     }
-
-
 }
-
-    
-
-
-

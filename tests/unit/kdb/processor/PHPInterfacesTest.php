@@ -1,19 +1,21 @@
 <?php
+
 namespace tests\unit\SysKDB\kdb\processor;
 
 require_once __DIR__.'/PHPTestBase.php';
 
-class PHPInterfacesTest extends PHPTestBase {
-
+class PHPInterfacesTest extends PHPTestBase
+{
     /**
-     * 
+     *
      *
      * @return array
      */
-    public function providerGetInterfaceDetails() : array {
+    public function providerGetInterfaceDetails(): array
+    {
         return [
             [
-                'interface MyInterface {}', 
+                'interface MyInterface {}',
                 [
                     'MyInterface'=> [
                         'name' => 'MyInterface',
@@ -33,14 +35,14 @@ class PHPInterfacesTest extends PHPTestBase {
 
                class MyClass3 implements A,B {}
                
-               ', 
+               ',
                 [
                  'MyClass1' =>
                     [
                         'name' => 'MyClass1',
                         'traits' => ['A']
                     ],
-                 'MyInterface' => 
+                 'MyInterface' =>
                     [
                         'name' => 'MyInterface',
                         'type' => 'interface',
@@ -53,7 +55,7 @@ class PHPInterfacesTest extends PHPTestBase {
                             ]
                         ]
                     ],
-                 'MyClass3' => 
+                 'MyClass3' =>
                     [
                         'name' => 'MyClass3',
                         'implements' => ['A','B']
@@ -79,28 +81,28 @@ class PHPInterfacesTest extends PHPTestBase {
                             ]
                         ]
                     ]
-                ]    
+                ]
             ]
 
         ];
     }
 
     /**
-     * 
+     *
      * @dataProvider providerGetInterfaceDetails
      * @param [type] $statement
      * @param [type] $expectedDetails
      * @return void
      */
-    public function test_get_interface_details($statement, $expectedDetails) {
-
+    public function test_get_interface_details($statement, $expectedDetails)
+    {
         $this->parseAndProcess($statement);
 
 
-        $declaredClasses = $this->processor->getArray('declared_class_names',[]);
+        $declaredClasses = $this->processor->getArrayDeclaredClassNames();
 
         foreach ($declaredClasses as $className) {
-            $details = $this->processor->hashGet('declared_classes',$className);
+            $details = $this->processor->getAssocClass($className);
             $this->assertTrue(isset($expectedDetails[$className]));
             foreach ($expectedDetails[$className] as $key => $expectedValue) {
                 $this->assertArrayHasKey($key, $details);
@@ -108,8 +110,4 @@ class PHPInterfacesTest extends PHPTestBase {
             }
         }
     }
-
-
-
-
 }

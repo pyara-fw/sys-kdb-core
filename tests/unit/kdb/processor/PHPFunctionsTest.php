@@ -6,7 +6,6 @@ require_once __DIR__ . '/PHPTestBase.php';
 
 class PHPFunctionsTest extends PHPTestBase
 {
-
     public function providerdependenciesInFunctions()
     {
         return [
@@ -145,7 +144,7 @@ class PHPFunctionsTest extends PHPTestBase
     }
 
     /**
-     * 
+     *
      * @dataProvider providerdependenciesInFunctions
      * @param string $statement
      * @param array $expectedDetails
@@ -156,16 +155,15 @@ class PHPFunctionsTest extends PHPTestBase
         $this->parseAndProcess($statement);
 
 
-        $declaredFunctions = $this->processor->getArray('declared_function_names',[]);
+        $declaredFunctions = $this->processor->getArrayDeclaredFunctionNames();
 
         foreach ($declaredFunctions as $functionName) {
-            $details = $this->processor->hashGet('declared_functions',$functionName);
+            $details = $this->processor->getAssocFunction($functionName);
             $this->assertTrue(isset($expectedDetails[$functionName]));
             foreach ($expectedDetails[$functionName] as $key => $expectedValue) {
                 $this->assertArrayHasKey($key, $details);
                 $this->assertEquals($expectedValue, $details[$key]);
             }
         }
-
     }
 }
