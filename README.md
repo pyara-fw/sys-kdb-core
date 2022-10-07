@@ -12,6 +12,9 @@ This work is part of my master's degree thesis.
 ```
 docker build -t dev-sys-kdb-core .
 
-PHP_INSTANCE=`docker run -d dev-sys-kdb-core`
+PHP_INSTANCE=`docker run -d -v "$(pwd):/app"  dev-sys-kdb-core`
 docker exec -it $PHP_INSTANCE bash
+
+
+docker stop $PHP_INSTANCE
 ```

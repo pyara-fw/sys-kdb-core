@@ -1,0 +1,31 @@
+version: "3"
+
+services: 
+
+    # Session storage
+    redis:
+        build: 
+            context: _docker_/redis
+            dockerfile: Dockerfile
+
+
+    # Dev container
+    dev:
+        build: 
+            context: . 
+            dockerfile: _docker_/php-dev/Dockerfile
+        volumes: 
+            - ".:/app"
+        depends_on:
+            - redis
+
+
+    # Web client to access container 'redis'
+    # When in production, should be removed
+    redis-ui:
+        image: marian/rebrow
+        ports: 
+            - "15001:5001"
+        depends_on: 
+            - redis
+

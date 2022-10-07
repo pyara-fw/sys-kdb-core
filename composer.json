@@ -1,7 +1,17 @@
 {
     "name": "pyara/sys-kdb-core",
     "description": "System Knowledge Database Core, based on KDM (Knowledge Discovery Metamodel;  ISO/IEC 19506)",
+    "autoload": {
+        "psr-4": {
+            "SysKDB\\": "src/",
+            "Pyara\\cli\\": "src/cli"
+        }
+    },
     "require-dev": {
         "phpunit/phpunit": "^9.5"
+    },
+    "require": {
+        "text/template": "^2.7",
+        "minicli/minicli": "^3.2"
     }
 }
