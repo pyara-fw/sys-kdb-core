@@ -2,31 +2,13 @@
 
 namespace SysKDB\kdm\lib;
 
-use ArrayIterator;
-use Iterator;
-use IteratorAggregate;
 use SysKDB\kdm\core\KDMEntity;
 
 /**
  * Undocumented class
  */
-class KDMEntityList implements IteratorAggregate
+class KDMEntityList extends ListBase
 {
-    /**
-     * @var array
-     */
-    protected $list = [];
-
-    /**
-     *
-     *
-     * @return Iterator
-     */
-    public function getIterator(): Iterator
-    {
-        return new ArrayIterator($this->list);
-    }
-
     /**
      *
      *
@@ -38,17 +20,12 @@ class KDMEntityList implements IteratorAggregate
         array_push($this->list, $entity);
     }
 
-
     /**
-     * Remove the item on position $i
-     *
      * @param integer $i
-     * @return void
+     * @return KDMEntity|null
      */
-    public function remove(int $i)
+    public function get(int $i): ?KDMEntity
     {
-        if (isset($this->list[$i])) {
-            unset($this->list[$i]);
-        }
+        return  $this->list[$i] ?? null;
     }
 }

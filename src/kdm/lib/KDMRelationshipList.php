@@ -2,31 +2,13 @@
 
 namespace SysKDB\kdm\lib;
 
-use ArrayIterator;
-use Iterator;
-use IteratorAggregate;
 use SysKDB\kdm\core\KDMRelationship;
 
 /**
  * Undocumented class
  */
-class KDMRelationshipList implements IteratorAggregate
+class KDMRelationshipList extends ListBase
 {
-    /**
-     * @var array
-     */
-    protected $list = [];
-
-    /**
-     *
-     *
-     * @return Iterator
-     */
-    public function getIterator(): Iterator
-    {
-        return new ArrayIterator($this->list);
-    }
-
     /**
      *
      *
@@ -38,17 +20,12 @@ class KDMRelationshipList implements IteratorAggregate
         array_push($this->list, $relationship);
     }
 
-
     /**
-     * Remove the item on position $i
-     *
      * @param integer $i
-     * @return void
+     * @return KDMRelationship|null
      */
-    public function remove(int $i)
+    public function get(int $i): ?KDMRelationship
     {
-        if (isset($this->list[$i])) {
-            unset($this->list[$i]);
-        }
+        return  $this->list[$i] ?? null;
     }
 }
