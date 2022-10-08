@@ -4,6 +4,8 @@ namespace  SysKDB\kdm\lib;
 
 class Enumeration
 {
+    public const  UNKNOWN = 'uknown';
+
     /**
      *
      *

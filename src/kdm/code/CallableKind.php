@@ -25,9 +25,4 @@ class CallableKind extends Enumeration
      * specifies a stored procedure in DataModel
      */
     public const STORED = 'stored';
-
-    /**
-     * properties are unknown
-     */
-    public const UNKNOWN = 'unknown';
 }

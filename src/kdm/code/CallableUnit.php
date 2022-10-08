@@ -9,6 +9,8 @@ namespace  SysKDB\kdm\code;
 class CallableUnit extends ControlElement
 {
     /**
+     * Indicator of the kind of the callable unit.
+     *
      * @var CallableKind
      */
     protected $kind;

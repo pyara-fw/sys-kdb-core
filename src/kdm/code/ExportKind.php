@@ -9,4 +9,5 @@ class ExportKind extends Enumeration
     public const PUBLIC = 'public';
     public const PROTECTED = 'protected';
     public const PRIVATE = 'private';
+    public const FINAL = 'final';
 }

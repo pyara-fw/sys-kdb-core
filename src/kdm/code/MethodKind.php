@@ -35,9 +35,4 @@ class MethodKind extends Enumeration
      * The MethodUnit represents an abstract method or member of an Interface.
      */
     public const ABSTRACT = 'abstract';
-
-    /**
-     * The kind of the MethodUnit is none of the above.
-     */
-    public const UNKNOWN = 'unknown';
 }
