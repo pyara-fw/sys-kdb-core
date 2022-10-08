@@ -3,6 +3,7 @@
 namespace  SysKDB\kdm\code;
 
 use SysKDB\kdm\core\KDMEntity;
+use SysKDB\kdm\lib\CommentUnitList;
 use SysKDB\kdm\source\SourceRef;
 
 /**
@@ -17,6 +18,11 @@ abstract class AbstractCodeElement extends KDMEntity
      * @var CodeRelation
      */
     protected $codeRelation;
+
+    /**
+     * @var CommentUnitList
+     */
+    protected $comment;
 
 
     /**
@@ -49,5 +55,18 @@ abstract class AbstractCodeElement extends KDMEntity
         $this->source = $source;
 
         return $this;
+    }
+
+    /**
+     * Get the value of comment
+     *
+     * @return  CommentUnitList
+     */
+    public function getComment()
+    {
+        if (!$this->comment) {
+            $this->comment = new CommentUnitList();
+        }
+        return $this->comment;
     }
 }
