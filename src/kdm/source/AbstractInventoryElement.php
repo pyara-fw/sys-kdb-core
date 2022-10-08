@@ -2,13 +2,14 @@
 
 namespace SysKDB\kdm\source;
 
+use SysKDB\kdm\core\KDMEntity;
 use SysKDB\kdm\lib\AbstractInventoryRelationshipList;
 
 /**
  * The AbstractInventoryElement is the abstract parent class for
  * all inventory entities.
  */
-abstract class AbstractInventoryElement
+abstract class AbstractInventoryElement extends KDMEntity
 {
     /**
      *
@@ -17,12 +18,6 @@ abstract class AbstractInventoryElement
      */
     protected $model;
 
-    /**
-     *
-     *
-     * @var InventoryContainer
-     */
-    protected $owner;
 
 
     /**
@@ -63,29 +58,7 @@ abstract class AbstractInventoryElement
         return $this;
     }
 
-    /**
-     * Get the value of owner
-     *
-     * @return  InventoryContainer
-     */
-    public function getOwner()
-    {
-        return $this->owner;
-    }
 
-    /**
-     * Set the value of owner
-     *
-     * @param  InventoryContainer  $owner
-     *
-     * @return  self
-     */
-    public function setOwner(InventoryContainer $owner)
-    {
-        $this->owner = $owner;
-
-        return $this;
-    }
 
     /**
      * Get list of inventory's elements of which this element depends on.

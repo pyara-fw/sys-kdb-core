@@ -27,4 +27,9 @@ abstract class Element implements PersistentObject
     {
         return KDB::getInstance()->getDB()->removeObjectById($this->getOid());
     }
+
+    public function __construct()
+    {
+        $this->makeOid();
+    }
 }

@@ -37,4 +37,18 @@ trait HasOID
 
         return $this;
     }
+
+    /**
+     * Create a Object ID (oid) based on current instance
+     * and a random value;
+     *
+     * @return void
+     */
+    protected function makeOid()
+    {
+        $preffix = get_class($this);
+        $suffix = hash('SHA256', random_bytes(10));
+
+        $this->oid = sprintf("%s::%s", $preffix, $suffix);
+    }
 }
