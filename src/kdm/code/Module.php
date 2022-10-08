@@ -2,6 +2,8 @@
 
 namespace  SysKDB\kdm\code;
 
+use SysKDB\kdm\lib\AbstractCodeElementList;
+
 /**
  * The Module class is a generic KDM modeling element that represents an entire
  * software module or a component, as determined by the programming language and
@@ -23,4 +25,17 @@ class Module extends CodeItem
      * @var AbstractCodeElementList
      */
     protected $codeElement;
+
+    /**
+     * Get the value of codeElement
+     *
+     * @return  AbstractCodeElementList
+     */
+    public function getCodeElement()
+    {
+        if (!$this->codeElement) {
+            $this->codeElement = new AbstractCodeElementList();
+        }
+        return $this->codeElement;
+    }
 }
