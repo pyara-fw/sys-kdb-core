@@ -2,6 +2,9 @@
 
 namespace  SysKDB\kdm\code;
 
-class TemplateParameter extends Datatype
+/**
+ * TemplateParameter is a meta-model element that represents parameters of a TemplateUnit.
+ */
+class TemplateParameter extends DataType
 {
 }

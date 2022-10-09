@@ -2,26 +2,26 @@
 
 namespace SysKDB\kdm\lib;
 
-use SysKDB\kdm\code\CodeItem;
+use SysKDB\kdm\code\DataType;
 
-class CodeItemList extends ListBase
+class DataTypeList extends ListBase
 {
     /**
      *
      *
-     * @param CodeItem $element
+     * @param DataType $element
      * @return void
      */
-    public function add(CodeItem $element)
+    public function add(DataType $element)
     {
         array_push($this->list, $element);
     }
 
     /**
      * @param integer $i
-     * @return CodeItem|null
+     * @return DataType|null
      */
-    public function get(int $i): ?CodeItem
+    public function get(int $i): ?DataType
     {
         return  $this->list[$i] ?? null;
     }

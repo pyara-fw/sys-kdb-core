@@ -47,12 +47,4 @@ class CommentUnit extends ModelElement
 
         return $this;
     }
-
-
-    // public function __construct()
-    // {
-    //     $this->get
-    //     $x = new CodeItem();
-    //     $this->setOwner($x);
-    // }
 }

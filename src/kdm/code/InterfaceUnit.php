@@ -2,6 +2,7 @@
 
 namespace  SysKDB\kdm\code;
 
+use SysKDB\kdm\lib\CodeItemList;
 use SysKDB\kdm\lib\omg\mof\DataType;
 
 /**
@@ -10,4 +11,23 @@ use SysKDB\kdm\lib\omg\mof\DataType;
  */
 class InterfaceUnit extends DataType
 {
+    /**
+     *
+     *
+     * @var CodeItemList
+     */
+    protected $codeElement;
+
+    /**
+     * Get the value of codeElement
+     *
+     * @return  CodeItemList
+     */
+    public function getCodeElement()
+    {
+        if (!$this->codeElement) {
+            $this->codeElement = new CodeItemList();
+        }
+        return $this->codeElement;
+    }
 }

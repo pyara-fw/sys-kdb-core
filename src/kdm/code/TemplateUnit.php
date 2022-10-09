@@ -9,7 +9,7 @@ use SysKDB\kdm\lib\CodeItemList;
  * common to some programming languages; for example, Ada generics, Java generics,
  * C++ templates.
  */
-class TemplateUnit extends Datatype
+class TemplateUnit extends DataType
 {
     /**
      * template formal parameters and the base datatype or computational object
@@ -17,4 +17,17 @@ class TemplateUnit extends Datatype
      * @var CodeItemList
      */
     protected $codeElement;
+
+    /**
+     * Get template formal parameters and the base datatype or computational object
+     *
+     * @return  CodeItemList
+     */
+    public function getCodeElement()
+    {
+        if (!$this->codeElement) {
+            $this->codeElement = new CodeItemList();
+        }
+        return $this->codeElement;
+    }
 }

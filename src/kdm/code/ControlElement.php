@@ -14,7 +14,7 @@ class ControlElement extends ComputationalObject
     /**
      * Optional association to the datatype of this control element
      *
-     * @var Datatype
+     * @var DataType
      */
     protected $dataType;
 
@@ -28,7 +28,7 @@ class ControlElement extends ComputationalObject
     /**
      * Get the value of dataType
      *
-     * @return  Datatype
+     * @return  DataType
      */
     public function getDataType()
     {
@@ -38,11 +38,11 @@ class ControlElement extends ComputationalObject
     /**
      * Set the value of dataType
      *
-     * @param  Datatype  $dataType
+     * @param  DataType  $dataType
      *
      * @return  self
      */
-    public function setDataType(Datatype $dataType)
+    public function setDataType(DataType $dataType)
     {
         $this->dataType = $dataType;
 

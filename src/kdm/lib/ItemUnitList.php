@@ -2,26 +2,26 @@
 
 namespace SysKDB\kdm\lib;
 
-use SysKDB\kdm\code\CodeItem;
+use SysKDB\kdm\code\ItemUnit;
 
-class CodeItemList extends ListBase
+class ItemUnitList extends ListBase
 {
     /**
      *
      *
-     * @param CodeItem $element
+     * @param ItemUnit $element
      * @return void
      */
-    public function add(CodeItem $element)
+    public function add(ItemUnit $element)
     {
         array_push($this->list, $element);
     }
 
     /**
      * @param integer $i
-     * @return CodeItem|null
+     * @return ItemUnit|null
      */
-    public function get(int $i): ?CodeItem
+    public function get(int $i): ?ItemUnit
     {
         return  $this->list[$i] ?? null;
     }

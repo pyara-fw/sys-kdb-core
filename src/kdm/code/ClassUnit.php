@@ -2,6 +2,7 @@
 
 namespace  SysKDB\kdm\code;
 
+use SysKDB\kdm\lib\CodeItemList;
 use SysKDB\kdm\lib\omg\mof\DataType;
 
 /**
@@ -15,7 +16,51 @@ class ClassUnit extends DataType
     /**
      * The indicator of an abstract class
      *
-     * @var boolean
+     * @var bool
      */
     protected $isAbstract = false;
+
+    /**
+     *
+     *
+     * @var CodeItemList
+     */
+    protected $codeElement;
+
+    /**
+     * Get the indicator of an abstract class
+     *
+     * @return  bool
+     */
+    public function getIsAbstract()
+    {
+        return $this->isAbstract;
+    }
+
+    /**
+     * Set the indicator of an abstract class
+     *
+     * @param  bool  $isAbstract  The indicator of an abstract class
+     *
+     * @return  self
+     */
+    public function setIsAbstract(bool $isAbstract)
+    {
+        $this->isAbstract = $isAbstract;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of codeElement
+     *
+     * @return  CodeItemList
+     */
+    public function getCodeElement()
+    {
+        if (!$this->codeElement) {
+            $this->codeElement = new CodeItemList();
+        }
+        return $this->codeElement;
+    }
 }
