@@ -2,9 +2,10 @@
 
 namespace SysKDB\kdm\source;
 
+use SysKDB\kdm\kdm\KDMModel;
 use SysKDB\kdm\lib\AbstractInventoryElementList;
 
-class InventoryModel
+class InventoryModel extends KDMModel
 {
     /**
      *
