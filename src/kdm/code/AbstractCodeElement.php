@@ -3,6 +3,7 @@
 namespace  SysKDB\kdm\code;
 
 use SysKDB\kdm\core\KDMEntity;
+use SysKDB\kdm\lib\AbstractCodeRelationshipList;
 use SysKDB\kdm\lib\CommentUnitList;
 use SysKDB\kdm\source\SourceRef;
 
@@ -15,7 +16,7 @@ abstract class AbstractCodeElement extends KDMEntity
     /**
      * The set of code relations owned by this code model.
      *
-     * @var CodeRelation
+     * @var AbstractCodeRelationshipList
      */
     protected $codeRelation;
 
@@ -24,6 +25,11 @@ abstract class AbstractCodeElement extends KDMEntity
      */
     protected $comment;
 
+
+    /**
+     * @var CodeModel
+     */
+    protected $model;
 
     /**
      * Link to the physical artifact for the given code element.
@@ -68,5 +74,42 @@ abstract class AbstractCodeElement extends KDMEntity
             $this->comment = new CommentUnitList();
         }
         return $this->comment;
+    }
+
+    /**
+     * Get the value of model
+     *
+     * @return  CodeModel
+     */
+    public function getModel()
+    {
+        return $this->model;
+    }
+
+    /**
+     * Set the value of model
+     *
+     * @param  CodeModel  $model
+     *
+     * @return  self
+     */
+    public function setModel(CodeModel $model)
+    {
+        $this->model = $model;
+        $model->getOwnedElements()->add($this);
+        return $this;
+    }
+
+    /**
+     * Get the set of code relations owned by this code model.
+     *
+     * @return  AbstractCodeRelationshipList
+     */
+    public function getCodeRelation()
+    {
+        if (!$this->codeRelation) {
+            $this->codeRelation = new AbstractCodeRelationshipList();
+        }
+        return $this->codeRelation;
     }
 }
