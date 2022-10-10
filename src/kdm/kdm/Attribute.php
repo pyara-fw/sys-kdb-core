@@ -112,7 +112,7 @@ class Attribute extends Element
     /**
      * @param Element $owner
      */
-    public function __construct(Element $owner)
+    public function __construct(?Element $owner=null)
     {
         $this->owner = $owner;
     }
