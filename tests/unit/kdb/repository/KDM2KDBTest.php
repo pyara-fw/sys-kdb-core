@@ -5,6 +5,7 @@ namespace tests\unit\SysKDB\kdb\processor;
 use PHPUnit\Framework\TestCase;
 use SebastianBergmann\CodeCoverage\Report\Xml\Source;
 use SysKDB\kdb\KDB;
+use SysKDB\kdb\repository\adapter\InMemoryAdapter;
 use SysKDB\kdb\repository\KDBRepository;
 use SysKDB\kdb\repository\KDM2KDBUtil;
 use SysKDB\kdm\code\CallableUnit;
@@ -96,19 +97,28 @@ class KDM2KDBTest extends TestCase
         $myClass->getCodeElement()->add($memberUnit);
 
 
-        // $adapter = new InMemoryAdapter();
+        $adapter = new InMemoryAdapter();
 
-        // $repository = new KDBRepository();
-        // $repository->setAdapter($adapter);
+        $repository = new KDBRepository();
+        $repository->setAdapter($adapter);
 
-        // $list = KDM2KDBUtil::convertKDM2KDB($inventoryModel);
-        // $repository->import($list);
+        $list = KDM2KDBUtil::convertKDM2KDB($inventoryModel);
+        $repository->import($list);
+
+        $ds = $repository->getAdapter()->getAll();
+
+        $this->assertCount(10, $ds);
+
+        $myClassOid = $myClass->getOid();
+        $myClassObj = $repository->getAdapter()->getObjectById($myClassOid);
+
+        $this->assertTrue(is_array($myClassObj));
+        $this->assertArrayHasKey('name', $myClassObj);
+        $this->assertEquals('MyClass', $myClassObj['name']);
 
         // print_r($list);
 
 
         // print_r($myClass->export());
-
-        $this->assertTrue(true);
     }
 }
