@@ -43,4 +43,14 @@ class Enumeration
     {
         $this->value = $value;
     }
+
+    /**
+     * Generate an OID for the current object
+     *
+     * @return string
+     */
+    public function getOid()
+    {
+        return get_class($this) . '::' . $this->getValue();
+    }
 }

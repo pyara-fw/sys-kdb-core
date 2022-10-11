@@ -96,7 +96,6 @@ abstract class AbstractCodeElement extends KDMEntity
     public function setModel(CodeModel $model)
     {
         $this->model = $model;
-        $model->getOwnedElements()->add($this);
         return $this;
     }
 

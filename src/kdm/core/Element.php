@@ -45,17 +45,7 @@ abstract class Element implements PersistentObject
     {
         $result = [];
         $result[Constants::CLASS_NAME] = get_class($this);
-        $result[Constants::OBJ_DATA] = $this->exportData();
+        $result[Constants::OBJ_DATA] = get_object_vars($this);
         return $result;
-    }
-
-    /**
-     * Export the object's data in array, to be used internally
-     *
-     * @return array
-     */
-    protected function exportData(): array
-    {
-        return get_object_vars($this);
     }
 }

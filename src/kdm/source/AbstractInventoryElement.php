@@ -54,7 +54,6 @@ abstract class AbstractInventoryElement extends KDMEntity
     public function setModel(InventoryModel $model)
     {
         $this->model = $model;
-
         return $this;
     }
 

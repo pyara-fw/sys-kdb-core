@@ -38,4 +38,14 @@ class ListBase implements IteratorAggregate
         }
         return $response;
     }
+
+    /**
+     * Return the list of value.
+     *
+     * @return array
+     */
+    public function getList(): array
+    {
+        return $this->list;
+    }
 }

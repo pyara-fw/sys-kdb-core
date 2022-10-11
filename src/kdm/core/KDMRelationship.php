@@ -70,6 +70,8 @@ class KDMRelationship extends ModelElement
      */
     public function __construct(KDMEntity $from, KDMEntity $to)
     {
+        parent::__construct();
+
         $this->from = $from;
         $this->to = $to;
 
