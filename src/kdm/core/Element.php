@@ -3,6 +3,7 @@
 namespace SysKDB\kdm\core;
 
 use SysKDB\kdb\KDB;
+use SysKDB\kdm\lib\Constants;
 use SysKDB\kdm\lib\HasOID as LibHasOID;
 use SysKDB\lib\dao\PersistentObject;
 use SysKDB\kdm\lib\DoesCompare;
@@ -31,5 +32,20 @@ abstract class Element implements PersistentObject
     public function __construct()
     {
         $this->makeOid();
+    }
+
+
+    /**
+     * Exports the object in an intermediate format, to be converted
+     * to KDM later.
+     *
+     * @return array
+     */
+    public function export(): array
+    {
+        $result = [];
+        $result[Constants::CLASS_NAME] = get_class($this);
+        $result[Constants::OBJ_DATA] = get_object_vars($this);
+        return $result;
     }
 }
