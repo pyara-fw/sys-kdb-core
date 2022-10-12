@@ -12,6 +12,7 @@
     },
     "require": {
         "text/template": "^2.7",
-        "minicli/minicli": "^3.2"
+        "minicli/minicli": "^3.2",
+        "mongodb/mongodb": "^1.12"
     }
 }

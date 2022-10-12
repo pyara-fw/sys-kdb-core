@@ -19,7 +19,8 @@ RUN apk update \
                zip php8-zip php8-fileinfo php8-dom php8-xml   \
                php8-xmlwriter php8-tokenizer php8-session     \
                php8-mbstring php8-sqlite3 php8-xdebug php8-curl \
-               php8-pdo php8-mysqli php8-pdo_mysql php8-redis
+               php8-pdo php8-mysqli php8-pdo_mysql php8-redis \
+               php8-mongodb
 
 RUN cp /usr/bin/php8 /usr/bin/php \
     && rm -f /var/cache/apk/*
