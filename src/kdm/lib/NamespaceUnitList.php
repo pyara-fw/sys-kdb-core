@@ -12,7 +12,9 @@ class NamespaceUnitList extends ListBase
      */
     public function add(NamespaceUnit $element)
     {
-        array_push($this->list, $element);
+        if (!$this->checkMapIfExists($element->getOid())) {
+            array_push($this->list, $element);
+        }
     }
 
     /**

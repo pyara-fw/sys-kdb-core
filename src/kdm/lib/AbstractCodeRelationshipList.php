@@ -14,7 +14,9 @@ class AbstractCodeRelationshipList extends ListBase
      */
     public function add(AbstractCodeRelationship $element)
     {
-        array_push($this->list, $element);
+        if (!$this->checkMapIfExists($element->getOid())) {
+            array_push($this->list, $element);
+        }
     }
 
     /**

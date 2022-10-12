@@ -14,7 +14,9 @@ class ParameterUnitList extends ListBase
      */
     public function add(ParameterUnit $element)
     {
-        array_push($this->list, $element);
+        if (!$this->checkMapIfExists($element->getOid())) {
+            array_push($this->list, $element);
+        }
     }
 
     /**

@@ -14,7 +14,9 @@ class SourceRegionList extends ListBase
      */
     public function add(SourceRegion $ref)
     {
-        array_push($this->list, $ref);
+        if (!$this->checkMapIfExists($ref->getOid())) {
+            array_push($this->list, $ref);
+        }
     }
 
     /**

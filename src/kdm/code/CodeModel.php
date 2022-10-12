@@ -3,6 +3,7 @@
 namespace  SysKDB\kdm\code;
 
 use SysKDB\kdm\kdm\KDMModel;
+use SysKDB\kdm\lib\AbstractCodeElementList;
 
 /**
  * The CodeModel is the specific KDM model that owns collections of
@@ -12,5 +13,23 @@ use SysKDB\kdm\kdm\KDMModel;
  */
 class CodeModel extends KDMModel
 {
+    /**
+     *
+     *
+     * @var AbstractCodeElementList
+     */
     protected $codeElement;
+
+    /**
+     * Get the value of codeElement
+     *
+     * @return  AbstractCodeElementList
+     */
+    public function getCodeElement()
+    {
+        if (!$this->codeElement) {
+            $this->codeElement = new AbstractCodeElementList();
+        }
+        return $this->codeElement;
+    }
 }

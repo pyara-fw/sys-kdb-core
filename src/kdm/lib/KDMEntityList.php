@@ -17,7 +17,9 @@ class KDMEntityList extends ListBase
      */
     public function add(KDMEntity $entity)
     {
-        array_push($this->list, $entity);
+        if (!$this->checkMapIfExists($entity->getOid())) {
+            array_push($this->list, $entity);
+        }
     }
 
     /**

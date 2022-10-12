@@ -8,6 +8,7 @@ use IteratorAggregate;
 
 class ListBase implements IteratorAggregate
 {
+    use IndexHash;
     /**
      * @var array
      */
