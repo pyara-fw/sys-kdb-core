@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\unit\SysKDB\kdb\processor;
+namespace tests\functional\SysKDB\kdb;
 
 use PHPUnit\Framework\TestCase;
 use SysKDB\kdb\KDB;
@@ -28,10 +28,49 @@ use SysKDB\kdm\source\SourceFile;
 use SysKDB\kdm\source\SourceRef;
 use SysKDB\kdm\source\SourceRegion;
 use SysKDB\lib\Constants;
+use MongoDB\Driver\BulkWrite;
+use MongoDB\Client;
 
-class KDM2KDBTest extends TestCase
+/**
+ * FeedMongoDBTest
+ */
+class FeedMongoDBTest extends TestCase
 {
-    public function test1()
+    protected $client;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+        $this->cleanupMongoDatabase();
+    }
+
+    protected function getClient()
+    {
+        if (!$this->client) {
+            $mongoUsername = getenv('MONGO_USERNAME');
+            $mongoPassword = getenv('MONGO_PASSWORD');
+            $mongoHost = getenv('MONGO_HOST');
+
+            $this->client = new Client("mongodb://$mongoUsername:$mongoPassword@$mongoHost:27017");
+        }
+        return $this->client;
+    }
+
+    protected function cleanupMongoDatabase()
+    {
+        $mongoDatabase = getenv('MONGO_DATABASE');
+        $collection = $this->getClient()->$mongoDatabase->objects;
+        $collection->deleteMany([]);
+    }
+
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+        // $this->cleanupMongoDatabase();
+    }
+
+    public function test_dataset_1()
     {
         $inventoryModel = new InventoryModel();
         $model = new CodeModel();
@@ -96,9 +135,7 @@ class KDM2KDBTest extends TestCase
 
 
         // Starting the conversion and data persistence
-        $adapter = new InMemoryAdapter();
         $adapter = new MongoAdapter();
-
 
         $repository = new KDBRepository();
         $repository->setAdapter($adapter);
@@ -122,43 +159,16 @@ class KDM2KDBTest extends TestCase
         $list = $repository->getAdapter()
             ->findByKeyValueAttribute(Constants::CLASSNAME, ClassUnit::class);
 
+        // print_r($list)            ;
 
         $this->assertCount(2, $list);
-
         $list = $list->findByKeyValueAttribute('name', 'MyClass');
-
         $this->assertCount(1, $list);
 
-        // print_r($list);
-    }
+        print_r($list);
 
-
-
-    public function setUp(): void
-    {
-        parent::setUp();
-
-        $mongoUsername = getenv('MONGO_USERNAME');
-        $mongoPassword = getenv('MONGO_PASSWORD');
-        $mongoDatabase = getenv('MONGO_DATABASE');
-        $mongoHost = getenv('MONGO_HOST');
-
-        $this->client = new \MongoDB\Client("mongodb://$mongoUsername:$mongoPassword@$mongoHost:27017");
-
-        $bulk = new \MongoDB\Driver\BulkWrite();
-
-        $delete = [];
-        $bulk->delete($delete);
-
-        $this->client->getManager()->executeBulkWrite("${mongoDatabase}.objects", $bulk);
-    }
-
-    protected $client;
-
-    protected function tearDown(): void
-    {
-        $mongoDatabase = getenv('MONGO_DATABASE');
-        $collection = $this->client->$mongoDatabase->objects;
-        $collection->deleteMany([]);
+        // SysKDB\kdm\code\KExtends
+        // from which class MyClass extends for?
+        // $list = $list->findByKeyValueAttribute('name', 'MyClass');
     }
 }

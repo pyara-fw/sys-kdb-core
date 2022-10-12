@@ -21,17 +21,18 @@ trait DoesSerialize
 
     /**
      * @param string $str
-     * @return void
+     * @return array
      */
     public function unserialize(string $str)
     {
         $arrValues = json_decode($str, true);
-        return $this->unpack($arrValues);
+        $this->unpack($arrValues);
+        return get_object_vars($this);
     }
 
     /**
      * @param array $data
-     * @return void
+     * @return self
      */
     public function unpack(array $data)
     {
