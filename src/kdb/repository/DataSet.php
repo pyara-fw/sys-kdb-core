@@ -7,8 +7,10 @@ use Iterator;
 use SysKDB\kdb\exception\AdapterNotSetException;
 use SysKDB\kdb\repository\adapter\AdapterInterface;
 
-class DataSet implements \IteratorAggregate
+class DataSet implements \IteratorAggregate, QueryableInterface
 {
+    use Queryable;
+
     /**
      * Internal repository
      *
@@ -92,5 +94,10 @@ class DataSet implements \IteratorAggregate
     public function __construct(array $items=[])
     {
         $this->list = $items;
+    }
+
+    public function getDataSource(): DataSet
+    {
+        return new self($this->list);
     }
 }

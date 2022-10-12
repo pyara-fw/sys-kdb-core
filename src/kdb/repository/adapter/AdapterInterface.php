@@ -4,11 +4,13 @@ namespace SysKDB\kdb\repository\adapter;
 
 use SysKDB\kdb\exception\ObjectNotFoundException;
 use SysKDB\kdb\repository\DataSet;
+use SysKDB\kdb\repository\Queryable;
+use SysKDB\kdb\repository\QueryableInterface;
 
 /**
  *
  */
-interface AdapterInterface
+interface AdapterInterface extends QueryableInterface
 {
     /**
      * Stores the record on DB and returns its ID.

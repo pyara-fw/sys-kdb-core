@@ -4,10 +4,14 @@ namespace SysKDB\kdb\repository\adapter;
 
 use SysKDB\kdb\exception\ObjectNotFoundException;
 use SysKDB\kdb\repository\DataSet;
+use SysKDB\kdb\repository\Queryable;
+use SysKDB\kdb\repository\QueryableInterface;
 use SysKDB\lib\Constants;
 
 class InMemoryAdapter implements AdapterInterface
 {
+    use Queryable;
+
     /**
      * Internal storage
      *
@@ -88,5 +92,10 @@ class InMemoryAdapter implements AdapterInterface
     {
         $ds = new DataSet($this->list);
         return $ds;
+    }
+
+    public function getDataSource(): DataSet
+    {
+        return $this->getAll();
     }
 }

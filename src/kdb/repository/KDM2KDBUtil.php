@@ -6,11 +6,13 @@ use SysKDB\kdm\core\Element;
 use SysKDB\kdm\lib\Constants;
 use SysKDB\kdm\lib\Enumeration;
 use SysKDB\kdm\lib\ListBase;
+use SysKDB\lib\Constants as LibConstants;
 
 class KDM2KDBUtil
 {
     protected static $result = [];
     protected static $counter = 0;
+    protected static $version = '1';
 
 
     /**
@@ -20,25 +22,14 @@ class KDM2KDBUtil
      * @param Element $element
      * @return array
      */
-    public static function convertKDM2KDB(Element $element): array
+    public static function convertKDM2KDB(Element $element, string $version='1'): array
     {
+        static::$version = $version;
         static::$counter = 0;
         static::$result = [];
 
         static::convertItem($element);
 
-        // $exportedData = $element->export();
-        // $currentOid = $element->getOid();
-        // static::$result[$currentOid] = [];
-        // foreach ($exportedData as $k => $data) {
-        //     if (is_scalar($data)) {
-        //         static::$result[$currentOid][$k] = $data;
-        //     } elseif (is_object($data)) {
-        //         if (is_a($data, Element::class)) {
-        //             static::convertItem($data);
-        //         }
-        //     }
-        // }
         return static::$result;
     }
 
@@ -57,7 +48,10 @@ class KDM2KDBUtil
             $exportedData = $exported;
         }
 
-        static::$result[$currentOid] = [];
+        static::$result[$currentOid] = [
+            LibConstants::CLASSNAME => get_class($element),
+            LibConstants::VERSION =>static::$version
+        ];
 
         foreach ($exportedData as $k => $data) {
             static::$counter++;

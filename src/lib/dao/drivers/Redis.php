@@ -2,9 +2,9 @@
 
 namespace SysKDB\lib\dao\drivers;
 
+use SysKDB\kdm\lib\HasConfig;
 use SysKDB\lib\dao\DataAccessObject;
 use SysKDB\lib\exception\ConnectionException;
-use SysKDB\lib\HasConfig;
 use SysKDB\lib\dao\PersistentObject;
 use SysKDB\lib\dao\PersistentObjectFactory;
 use SysKDB\lib\exception\ConnectionNotEstablishedException;
