@@ -7,7 +7,7 @@ use SysKDB\kdb\KDB;
 use SysKDB\kdb\repository\adapter\InMemoryAdapter;
 use SysKDB\kdb\repository\adapter\MongoAdapter;
 use SysKDB\kdb\repository\KDBRepository;
-use SysKDB\kdb\repository\KDM2KDBUtil;
+use SysKDB\kdb\repository\util\ConvertUtil;
 use SysKDB\kdm\code\CallableUnit;
 use SysKDB\kdm\code\ClassUnit;
 use SysKDB\kdm\code\CodeItem;
@@ -140,7 +140,7 @@ class FeedMongoDBTest extends TestCase
         $repository = new KDBRepository();
         $repository->setAdapter($adapter);
 
-        $list = KDM2KDBUtil::convertKDM2KDB($inventoryModel);
+        $list = ConvertUtil::convertKDM_2_KDB($inventoryModel);
         $repository->import($list);
 
         // Query
@@ -165,7 +165,7 @@ class FeedMongoDBTest extends TestCase
         $list = $list->findByKeyValueAttribute('name', 'MyClass');
         $this->assertCount(1, $list);
 
-        print_r($list);
+        // print_r($list);
 
         // SysKDB\kdm\code\KExtends
         // from which class MyClass extends for?
