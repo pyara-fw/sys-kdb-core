@@ -87,6 +87,17 @@ class DataSet implements \IteratorAggregate, QueryableInterface
         return $this;
     }
 
+    /**
+     * @param mixed $key
+     * @param array $item
+     * @return self
+     */
+    public function update($key, $item): self
+    {
+        $this->list[$key] = $item;
+        return $this;
+    }
+
 
     /**
      * @param array $items
