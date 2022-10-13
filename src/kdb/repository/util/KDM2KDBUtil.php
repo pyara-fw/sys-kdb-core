@@ -1,6 +1,6 @@
 <?php
 
-namespace SysKDB\kdb\repository;
+namespace SysKDB\kdb\repository\util;
 
 use SysKDB\kdm\core\Element;
 use SysKDB\kdm\lib\Constants;
@@ -22,7 +22,7 @@ class KDM2KDBUtil
      * @param Element $element
      * @return array
      */
-    public static function convertKDM2KDB(Element $element, string $version='1'): array
+    public static function convert(Element $element, string $version='1'): array
     {
         static::$version = $version;
         static::$counter = 0;
