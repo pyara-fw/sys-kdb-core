@@ -17,4 +17,12 @@ class PrimitiveType extends DataType
         }
         return static::$instance;
     }
+
+    public function __toString()
+    {
+        if (@isset($this->value)) {
+            return $this->value;
+        }
+        return get_class($this);
+    }
 }

@@ -11,4 +11,6 @@ class Constants
 
     public const STATUS_PROCESSED = 'processed';
     public const STATUS_PROCESSING = 'processing';
+
+    public const INTERNAL_CLASS_NAME = 'internalClassName';
 }

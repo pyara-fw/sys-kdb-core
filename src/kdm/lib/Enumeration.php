@@ -53,4 +53,9 @@ class Enumeration
     {
         return get_class($this) . '::' . $this->getValue();
     }
+
+    public function __toString()
+    {
+        return $this->value;
+    }
 }

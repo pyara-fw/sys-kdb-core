@@ -4,7 +4,8 @@
     "autoload": {
         "psr-4": {
             "SysKDB\\": "src/",
-            "Pyara\\cli\\": "src/cli"
+            "Pyara\\cli\\": "src/cli",
+            "Pyara\\app\\": "src/app"
         }
     },
     "require-dev": {

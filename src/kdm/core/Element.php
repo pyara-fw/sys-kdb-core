@@ -8,6 +8,7 @@ use SysKDB\kdm\lib\HasOID as LibHasOID;
 use SysKDB\lib\dao\PersistentObject;
 use SysKDB\kdm\lib\DoesCompare;
 use SysKDB\kdm\lib\DoesSerialize;
+use SysKDB\lib\Constants as LibConstants;
 
 /**
  * @author Eduardo Luz <eduardo @ eduardo-luz.com>
@@ -22,7 +23,9 @@ abstract class Element implements PersistentObject
     public const STATUS_OPEN = 'open';
     public const STATUS_CLOSED = 'closed';
 
-    protected $processingStatus;
+    protected $internalProcessingStatus;
+
+    protected $internalClassName;
 
 
     public function store(): PersistentObject
@@ -37,6 +40,7 @@ abstract class Element implements PersistentObject
     public function __construct()
     {
         $this->makeOid();
+        $this->internalClassName = get_class($this);
     }
 
 
@@ -61,11 +65,11 @@ abstract class Element implements PersistentObject
     }
 
     /**
-     * Get the value of processingStatus
+     * Get the value of internalProcessingStatus
      */
     public function getProcessingStatus()
     {
-        return $this->processingStatus;
+        return $this->internalProcessingStatus;
     }
 
     /**
@@ -75,7 +79,7 @@ abstract class Element implements PersistentObject
      */
     public function setProcessingStatus($processingStatus)
     {
-        $this->processingStatus = $processingStatus;
+        $this->internalProcessingStatus = $processingStatus;
         return $this;
     }
 }
