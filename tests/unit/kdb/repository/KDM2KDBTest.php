@@ -3,9 +3,10 @@
 namespace tests\unit\SysKDB\kdb\processor;
 
 use PHPUnit\Framework\TestCase;
+use SysKDB\kdb\KDB;
 use SysKDB\kdb\repository\adapter\InMemoryAdapter;
 use SysKDB\kdb\repository\KDBRepository;
-use SysKDB\kdb\repository\KDM2KDBUtil;
+use SysKDB\kdb\repository\util\ConvertUtil;
 use SysKDB\kdm\code\ClassUnit;
 use SysKDB\kdm\code\CodeModel;
 use SysKDB\kdm\code\CommentUnit;
@@ -91,34 +92,35 @@ class KDM2KDBTest extends TestCase
         return $assets;
     }
 
+    protected function populateData($assets)
+    {
+        $adapter = new InMemoryAdapter();
+        $this->repository = new KDBRepository();
+        $this->repository->setAdapter($adapter);
+
+
+        $list = ConvertUtil::convertKDM_2_KDB($assets['inventoryModel']);
+        $this->repository->import($list);
+
+
+        $list2 = ConvertUtil::convertKDM_2_KDB($assets['model']);
+        $this->repository->import($list2);
+    }
+
 
     public function test1()
     {
         $assets = $this->buildAssetsTest1();
 
         // Starting the conversion and data persistence
-        $adapter = new InMemoryAdapter();
+        $this->populateData($assets);
 
 
-        $this->repository = new KDBRepository();
-        $this->repository->setAdapter($adapter);
-
-
-        $list = KDM2KDBUtil::convertKDM2KDB($assets['inventoryModel']);
-        $this->repository->import($list);
-        // echo "\n list1 = ". count($list)."\n";
-
-        $list = KDM2KDBUtil::convertKDM2KDB($assets['model']);
-        $this->repository->import($list);
-        // echo "\n list2 = ". count($list)."\n";
-        // print_r($list);
-
-
-        // Query
+        // Query all items. Should return 10 elements
         $ds = $this->repository->getAdapter()->getAll();
-
         $this->assertCount(10, $ds);
 
+        // Picking an element using its ID, and comparing with the original
         $assets['myClass2.oid'] = $assets['myClass2']->getOid();
         $assets['myClass2.obj'] = $this->repository->getAdapter()->getObjectById($assets['myClass2.oid']);
 
@@ -138,5 +140,31 @@ class KDM2KDBTest extends TestCase
         $listAbstractClasses = $listClasses->findByKeyValueAttribute('isAbstract', true);
         $this->assertCount(1, $listAbstractClasses);
         $this->assertEquals($assets['myClass1']->getName(), $listAbstractClasses->get(0)['name']);
+
+        // print_r($listClasses);
+
+        // Giving a class, look for it parent, if any.
+        $listSelectedClasses = $listClasses->findByKeyValueAttribute('name', 'MyClass');
+        $this->assertCount(1, $listSelectedClasses);
+    }
+
+
+    /**
+     * @depends test1
+     *
+     * @return void
+     */
+    public function test2()
+    {
+        $assets = $this->buildAssetsTest1();
+
+        // Starting the conversion and data persistence
+        $this->populateData($assets);
+
+        KDB::getInstance()->setRepository($this->repository);
+
+        $myClassObj = KDB::getInstance()->getClassByName('MyClass');
+        // print_r($myClassObj);
+        $this->assertTrue(true);
     }
 }
