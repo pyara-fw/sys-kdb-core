@@ -15,7 +15,7 @@ class PersistentObjectFactory
         }
 
         $obj = new $className();
-        $obj->unpack($data);
+        $obj->import($data);
 
         if (!$obj->getOid()) {
             $obj->setOid(UniqueId::get());

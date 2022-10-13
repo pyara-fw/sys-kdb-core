@@ -9,6 +9,7 @@ use SysKDB\lib\Constants;
  */
 trait DoesSerialize
 {
+    protected static $ATTR_LIST;
     /**
      * @return string
      */
@@ -26,19 +27,36 @@ trait DoesSerialize
     public function unserialize(string $str)
     {
         $arrValues = json_decode($str, true);
-        $this->unpack($arrValues);
+        $this->import($arrValues);
         return get_object_vars($this);
     }
 
     /**
      * @param array $data
-     * @return self
+     * @param \Closure $data
+     * @return mixed|null
      */
-    public function unpack(array $data)
+    public function import(array $data, \Closure $callback=null)
     {
-        foreach ($data as $k=>$v) {
-            $this->$k = $v;
+        if (!static::$ATTR_LIST) {
+            static::$ATTR_LIST = get_object_vars($this);
         }
-        return $this;
+
+        foreach ($data as $k=>$v) {
+            if (array_key_exists($k, static::$ATTR_LIST)) {
+                if (is_scalar($v)) {
+                    $this->$k = $v;
+                }
+            }
+        }
+
+        if ($callback) {
+            return $callback($this);
+        }
+    }
+
+    public function exportVars(): array
+    {
+        return get_object_vars($this);
     }
 }

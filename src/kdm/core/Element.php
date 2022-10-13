@@ -19,6 +19,11 @@ abstract class Element implements PersistentObject
     use DoesSerialize;
     use DoesCompare;
 
+    public const STATUS_OPEN = 'open';
+    public const STATUS_CLOSED = 'closed';
+
+    protected $processingStatus;
+
 
     public function store(): PersistentObject
     {
@@ -47,5 +52,30 @@ abstract class Element implements PersistentObject
         $result[Constants::CLASS_NAME] = get_class($this);
         $result[Constants::OBJ_DATA] = get_object_vars($this);
         return $result;
+    }
+
+
+    public function getReferencedAttributesMap(): array
+    {
+        return [];
+    }
+
+    /**
+     * Get the value of processingStatus
+     */
+    public function getProcessingStatus()
+    {
+        return $this->processingStatus;
+    }
+
+    /**
+     * Set the value of processingStatus
+     *
+     * @return  self
+     */
+    public function setProcessingStatus($processingStatus)
+    {
+        $this->processingStatus = $processingStatus;
+        return $this;
     }
 }

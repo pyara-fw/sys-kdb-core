@@ -8,4 +8,13 @@ namespace  SysKDB\kdm\code;
  */
 class PrimitiveType extends DataType
 {
+    protected static $instance;
+    public static function getInstance()
+    {
+        if (!static::$instance) {
+            $className = static::class;
+            static::$instance = new $className();
+        }
+        return static::$instance;
+    }
 }

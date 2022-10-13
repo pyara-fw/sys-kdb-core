@@ -65,4 +65,12 @@ class MethodUnit extends ControlElement
 
         return $this;
     }
+
+    public function getReferencedAttributesMap(): array
+    {
+        return  parent::getReferencedAttributesMap() + [
+            'kind' => 'setKind',
+            'exportKind' => 'setExportKind'
+        ];
+    }
 }
