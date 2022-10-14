@@ -48,7 +48,7 @@ class PlantUML implements ProviderInterface
 
 
         $templateClass = <<<EOD
-class {= name } {if extendsFromName }extends {= extendsFromName} {/if}{
+{if isAbstract}abstract {/if}class {= name } {if extendsFromName }extends {= extendsFromName} {/if}{
 {for attribute in attributesList}
     {= attribute.visibility} {= attribute.type} {= attribute.name }
 {/for}

@@ -18,6 +18,15 @@ use SysKDB\kdm\code\MemberUnit;
 use SysKDB\kdm\code\MethodUnit;
 use SysKDB\kdm\code\StringType;
 
+/**
+ * TODO
+ * [x] Simple class
+ * [x] Two classes, with inheritance
+ * [x] Abstract class
+ * [ ] Two classes, implementing an interface
+ * [ ] A class associated to another
+ *
+ */
 class PlantUmlGeneratorsTest extends TestCase
 {
     protected $repository;
@@ -196,7 +205,7 @@ EOD;
 
         $tests[] = function ($output, $assets, $self) {
             $expectedOutput = <<<EOD
-class MyParentClass {
+abstract class MyParentClass {
     # String tag
     # String location
 }
