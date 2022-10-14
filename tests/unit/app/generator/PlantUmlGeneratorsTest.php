@@ -15,6 +15,7 @@ use SysKDB\kdm\code\CommentUnit;
 use SysKDB\kdm\code\ExportKind;
 use SysKDB\kdm\code\KExtends;
 use SysKDB\kdm\code\MemberUnit;
+use SysKDB\kdm\code\MethodKind;
 use SysKDB\kdm\code\MethodUnit;
 use SysKDB\kdm\code\StringType;
 
@@ -119,6 +120,7 @@ class PlantUmlGeneratorsTest extends TestCase
         $assets['method2'] = new MethodUnit();
         $assets['method2']->setName('myMethod2');
         $assets['method2']->setOwner($assets['myClass']);
+        $assets['method2']->setKind(new MethodKind(MethodKind::ABSTRACT));
         $assets['method2']->setDataType(StringType::getInstance());
         $assets['method2']->setExportKind(new ExportKind(ExportKind::PUBLIC));
 
@@ -132,11 +134,12 @@ class PlantUmlGeneratorsTest extends TestCase
             $expectedOutput = <<<EOD
 class MyClass {
     # String myMethod1()
-    + String myMethod2()
+   {abstract} + String myMethod2()
 }
 
 
 EOD;
+
             $self->assertEquals($expectedOutput, $output);
         };
 
@@ -205,7 +208,7 @@ EOD;
 
         $tests[] = function ($output, $assets, $self) {
             $expectedOutput = <<<EOD
-abstract class MyParentClass {
+{abstract} class MyParentClass {
     # String tag
     # String location
 }
@@ -218,7 +221,6 @@ class MyClass2 extends MyParentClass {
 
 EOD;
 
-            // print_r($output);
 
             $self->assertEquals($expectedOutput, $output);
         };

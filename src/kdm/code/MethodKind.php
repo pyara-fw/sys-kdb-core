@@ -35,4 +35,14 @@ class MethodKind extends Enumeration
      * The MethodUnit represents an abstract method or member of an Interface.
      */
     public const ABSTRACT = 'abstract';
+
+
+    public static function compare($instance, $valueToCompare)
+    {
+        if (is_object($instance)) {
+            return $instance->getValue() == $valueToCompare;
+        }
+        $obj = new self($valueToCompare);
+        return $obj->getOid() === $instance;
+    }
 }

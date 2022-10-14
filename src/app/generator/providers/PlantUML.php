@@ -7,6 +7,7 @@ use SysKDB\kdb\repository\DataSet;
 use SysKDB\kdm\code\ClassUnit;
 use SysKDB\kdm\code\KExtends;
 use SysKDB\kdm\code\MemberUnit;
+use SysKDB\kdm\code\MethodKind;
 use SysKDB\kdm\code\MethodUnit;
 use SysKDB\kdm\code\StringType;
 use SysKDB\lib\Constants;
@@ -40,6 +41,26 @@ class PlantUML implements ProviderInterface
     protected function initTemplate($str)
     {
         $this->tt = new TextTemplate($str);
+
+        $this->tt->addFunction(
+            "echoBrackets",
+            function ($paramArr, $command, $context, $cmdParam, $self) {
+                return '{' . ($paramArr["text"] ?? '') . '}';
+            }
+        );
+
+        $this->tt->addFunction(
+            "echoBracketsIfTrue",
+            function ($paramArr, $command, $context, $cmdParam, $self) {
+                if ($paramArr["compare"]) {
+                    return '{' . ($paramArr["text"] ?? '') . '}';
+                } else {
+                    return '';
+                }
+            }
+        );
+
+        //echoBrackets
     }
 
     public function generateClassDiagram(DataSet $dataSet): string
@@ -48,14 +69,11 @@ class PlantUML implements ProviderInterface
 
 
         $templateClass = <<<EOD
-{if isAbstract}abstract {/if}class {= name } {if extendsFromName }extends {= extendsFromName} {/if}{
+{if isAbstract == true}{echoBrackets text="abstract"} {/if}class {= name } {if extendsFromName }extends {= extendsFromName} {/if}{
 {for attribute in attributesList}
     {= attribute.visibility} {= attribute.type} {= attribute.name }
-{/for}
-{for method in methodsList}
-    {= method.visibility} {= method.dataType} {= method.name }()
-{/for}
-}
+{/for}{= newline}
+{for method in methodsList}   {echoBracketsIfTrue text="abstract" compare=method.isAbstract} {= method.visibility} {= method.dataType} {= method.name }(){= newline}{/for}}
 
 EOD;
         $this->initTemplate($templateClass);
@@ -66,6 +84,7 @@ EOD;
         $listClasses = $this->dataSet->findByKeyValueAttribute(Constants::INTERNAL_CLASS_NAME, ClassUnit::class);
 
         foreach ($listClasses as $class) {
+            $class['newline'] = "\n";
             $this->processClassRelations($class);
             $this->processClassMethods($class);
             $this->processClassAttributes($class);
@@ -142,6 +161,7 @@ EOD;
                     'name' => $record['name'],
                     'exportKind' => strval($record['exportKind']),
                     'visibility' => static::VISIBILITY_MAP[strval($record['exportKind'])] ?? '',
+                    'isAbstract' => false
                 ];
                 $dataType = '';
                 if (is_scalar($record['dataType'])) {
@@ -159,6 +179,12 @@ EOD;
                     }
                 }
                 $method['dataType'] = static::DATATYPE_MAP[$dataType] ?? '';
+
+                if ($record['kind']) {
+                    if (MethodKind::compare($record['kind'], MethodKind::ABSTRACT)) {
+                        $method['isAbstract'] = true;
+                    }
+                }
 
                 $class['methodsList'][] = $method;
             }
