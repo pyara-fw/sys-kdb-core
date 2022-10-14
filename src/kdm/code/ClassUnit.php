@@ -65,7 +65,7 @@ class ClassUnit extends DataType
      */
     public function getCodeElement()
     {
-        if (!$this->codeElement) {
+        if (!is_object($this->codeElement)) {
             $this->codeElement = new CodeItemList();
         }
         return $this->codeElement;

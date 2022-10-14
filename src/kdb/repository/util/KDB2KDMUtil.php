@@ -14,6 +14,11 @@ class KDB2KDMUtil
     protected static $input = [];
 
 
+    public static function reset()
+    {
+        static::$result = [];
+        static::$input = [];
+    }
 
     public static function convert(DataSet $dataSet): array
     {

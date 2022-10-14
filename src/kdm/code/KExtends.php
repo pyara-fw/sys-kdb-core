@@ -3,7 +3,6 @@
 namespace  SysKDB\kdm\code;
 
 use SysKDB\kdm\core\KDMEntity;
-use SysKDB\kdm\lib\omg\mof\DataType;
 
 /**
  * The Extends is a specific meta-model element that represents semantic relation
@@ -14,37 +13,26 @@ use SysKDB\kdm\lib\omg\mof\DataType;
 class KExtends extends AbstractCodeRelationship
 {
     /**
-     * the child Class
-     *
-     * @var DataType
-     */
-    protected $from;
-
-    /**
-     * the parent Class
-     *
-     * @var DataType
-     */
-    protected $to;
-
-
-    /**
      * @return  DataType
      */
-    public function getFrom()
+    public function getChild()
     {
         return $this->from;
     }
+
 
     /**
      * @param  DataType  $from
      *
      * @return  self
      */
-    public function setFrom(KDMEntity $from)
+    public function setChild(KDMEntity $from)
     {
         if (is_a($from, DataType::class)) {
             $this->from = $from;
+            // if (is_callable($from->getCodeRelation())) {
+            $from->getCodeRelation()->add($this);
+            // }
         }
 
         return $this;
@@ -53,7 +41,7 @@ class KExtends extends AbstractCodeRelationship
     /**
      * @return  DataType
      */
-    public function getTo()
+    public function getParent()
     {
         return $this->to;
     }
@@ -63,12 +51,22 @@ class KExtends extends AbstractCodeRelationship
      *
      * @return  self
      */
-    public function setTo(KDMEntity $to)
+    public function setParent(KDMEntity $to)
     {
         if (is_a($to, DataType::class)) {
             $this->to = $to;
+            // if (is_callable($to->getCodeRelation())) {
+            $to->getCodeRelation()->add($this);
+            // }
         }
 
         return $this;
+    }
+
+    public function getReferencedAttributesMap(): array
+    {
+        return  parent::getReferencedAttributesMap() + [
+            'from' => 'setChild', 'to' => 'setParent'
+        ];
     }
 }

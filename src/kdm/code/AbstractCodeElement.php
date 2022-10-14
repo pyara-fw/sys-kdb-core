@@ -107,7 +107,7 @@ abstract class AbstractCodeElement extends KDMEntity
      */
     public function getCodeRelation()
     {
-        if (!$this->codeRelation) {
+        if (!is_object($this->codeRelation)) {
             $this->codeRelation = new AbstractCodeRelationshipList();
         }
         return $this->codeRelation;

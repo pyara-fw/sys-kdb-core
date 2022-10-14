@@ -101,4 +101,9 @@ class KDM2KDBUtil
         }
         return $currentOid;
     }
+
+    public static function reset()
+    {
+        static::$result = [];
+    }
 }

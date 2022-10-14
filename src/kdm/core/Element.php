@@ -82,4 +82,12 @@ abstract class Element implements PersistentObject
         $this->internalProcessingStatus = $processingStatus;
         return $this;
     }
+
+    /**
+     * Get the value of internalClassName
+     */
+    public function getInternalClassName()
+    {
+        return $this->internalClassName;
+    }
 }

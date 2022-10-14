@@ -16,4 +16,10 @@ class ConvertUtil
     {
         return KDB2KDMUtil::convert($list);
     }
+
+    public static function reset()
+    {
+        KDB2KDMUtil::reset();
+        KDM2KDBUtil::reset();
+    }
 }

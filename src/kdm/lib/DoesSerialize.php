@@ -38,18 +38,25 @@ trait DoesSerialize
      */
     public function import(array $data, \Closure $callback=null)
     {
-        if (!static::$ATTR_LIST) {
-            static::$ATTR_LIST = get_object_vars($this);
-        }
+        // if (!static::$ATTR_LIST) {
+        //     static::$ATTR_LIST = get_object_vars($this);
+        // }
+        $attrList = get_object_vars($this);
+
 
         foreach ($data as $k=>$v) {
-            if (array_key_exists($k, static::$ATTR_LIST)) {
-                if (is_scalar($v)) {
-                    $this->$k = $v;
-                }
+            if (array_key_exists($k, $attrList)) {
+                // if (is_scalar($v)) {
+                $this->$k = $v;
+                // }
             }
         }
 
+        return $this->apply($callback);
+    }
+
+    public function apply(\Closure $callback=null)
+    {
         if ($callback) {
             return $callback($this);
         }

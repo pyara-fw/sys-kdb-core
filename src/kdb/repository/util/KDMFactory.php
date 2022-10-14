@@ -11,7 +11,7 @@ class KDMFactory
     {
         $record[Constants::STATUS_PROCESSING] = true;
 
-        $className = substr($oid, 0, strpos($oid, ':'));
+        $className = substr($oid, 0, strpos($oid, ':')); // use getInternalClassName
         $obj = new $className();
         $obj->setProcessingStatus(Element::STATUS_OPEN);
 
@@ -44,7 +44,7 @@ class KDMFactory
         $isPending = false;
         $obj = $context[$oid];
 
-        $obj->import($record, function ($element) use ($record, $context, $oid, &$isPending) {
+        $obj->apply(function ($element) use ($record, $context, $oid, &$isPending) {
             $referencedMap = $element->getReferencedAttributesMap();
             foreach ($referencedMap as $field => $caller) {
                 if (isset($record[$field])) {

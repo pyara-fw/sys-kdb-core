@@ -49,7 +49,7 @@ trait OwnershipEntityTrait
      */
     public function getOwnedElements(): KDMEntityList
     {
-        if (!$this->ownedElements) {
+        if (!is_object($this->ownedElements)) {
             $this->ownedElements = new KDMEntityList();
         }
         return $this->ownedElements;
