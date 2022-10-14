@@ -5,11 +5,14 @@ namespace Pyara\app\generator\providers;
 use Leuffen\TextTemplate\TextTemplate;
 use SysKDB\kdb\repository\DataSet;
 use SysKDB\kdm\code\ClassUnit;
+use SysKDB\kdm\code\InterfaceUnit;
 use SysKDB\kdm\code\KExtends;
 use SysKDB\kdm\code\MemberUnit;
 use SysKDB\kdm\code\MethodKind;
 use SysKDB\kdm\code\MethodUnit;
 use SysKDB\kdm\code\StringType;
+use SysKDB\kdm\code\IntegerType;
+use SysKDB\kdm\code\Kimplements;
 use SysKDB\lib\Constants;
 
 class PlantUML implements ProviderInterface
@@ -34,7 +37,8 @@ class PlantUML implements ProviderInterface
         ];
 
     public const DATATYPE_MAP = [
-            StringType::class => 'String'
+            StringType::class => 'String',
+            IntegerType::class => 'Integer',
         ];
 
 
@@ -67,9 +71,73 @@ class PlantUML implements ProviderInterface
     {
         $this->setDataSet($dataSet);
 
+        $response = '';
 
+        $response .= $this->generateInterfaceBlock();
+        $response .= $this->generateClassBlock();
+
+        return $response;
+    }
+
+    protected function generateInterfaceBlock()
+    {
+        $templateInterface = <<<EOD
+interface {= name }{if extendsFromName } extends {= extendsFromName}{/if}
+{= newline}
+{for method in methodsList}{= name } : {= method.visibility} {= method.dataType} {= method.name }(){= newline}{/for}
+
+{for implementation in implementations }
+{= name } <|.. {= implementation.name}
+{/for}
+EOD;
+        $this->initTemplate($templateInterface);
+
+
+        $response = '';
+
+        $listInterfaces = $this->dataSet->findByKeyValueAttribute(Constants::INTERNAL_CLASS_NAME, InterfaceUnit::class);
+
+        foreach ($listInterfaces as $interface) {
+            $interface['newline'] = "\n";
+            $this->processInterfaceRelations($interface);
+            $this->processClassMethods($interface);
+            // $this->processClassAttributes($class);
+            $response .= $this->tt->apply($interface).  "\n";
+        }
+
+
+        return $response;
+    }
+
+    protected function processInterfaceRelations(&$interface)
+    {
+        $extendsFrom = null;
+        $extendsFromName = '';
+        $interface['implementations'] = [];
+        if (is_object($interface['codeRelation'])) {
+            foreach ($interface['codeRelation'] as $codeRelation) {
+                if (KExtends::class === $codeRelation->getInternalClassName()) {
+                    if ($interface[Constants::OID] === $codeRelation->getFrom()->getOid()) {
+                        $extendsFrom = $codeRelation->getTo();
+                        $extendsFromName = $codeRelation->getTo()->getName();
+                    }
+                } elseif (Kimplements::class ===$codeRelation->getInternalClassName()) {
+                    if ($interface[Constants::OID] === $codeRelation->getTo()->getOid()) {
+                        $interface['implementations'][] = [
+                            'class' => $codeRelation->getFrom(),
+                            'name' => $codeRelation->getFrom()->getName(),
+                        ];
+                    }
+                }
+            }
+        }
+        $interface['extendsFrom'] = $extendsFrom;
+        $interface['extendsFromName'] = $extendsFromName;
+    }
+    protected function generateClassBlock()
+    {
         $templateClass = <<<EOD
-{if isAbstract == true}{echoBrackets text="abstract"} {/if}class {= name } {if extendsFromName }extends {= extendsFromName} {/if}{
+{if isAbstract == true}abstract {/if}class {= name } {if extendsFromName }extends {= extendsFromName} {/if}{
 {for attribute in attributesList}
     {= attribute.visibility} {= attribute.type} {= attribute.name }
 {/for}{= newline}
@@ -112,6 +180,7 @@ EOD;
         $class['extendsFrom'] = $extendsFrom;
         $class['extendsFromName'] = $extendsFromName;
     }
+
 
 
     protected function processClassAttributes(&$class)

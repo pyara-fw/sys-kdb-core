@@ -3,6 +3,7 @@
 namespace  SysKDB\kdm\code;
 
 use SysKDB\kdm\core\KDMEntity;
+use SysKDB\kdm\lib\CodeItemList;
 
 /**
  * The Implements is a meta-model element that represents “implementation”
@@ -44,6 +45,7 @@ class Kimplements extends AbstractCodeRelationship
     {
         if (is_a($from, CodeItem::class)) {
             $this->from = $from;
+            $from->getCodeRelation()->add($this);
         }
 
         return $this;
@@ -66,8 +68,18 @@ class Kimplements extends AbstractCodeRelationship
     {
         if (is_a($to, CodeItem::class)) {
             $this->to = $to;
+            $to->getCodeRelation()->add($this);
         }
 
         return $this;
+    }
+
+
+
+    public function getReferencedAttributesMap(): array
+    {
+        return  parent::getReferencedAttributesMap() + [
+            'from' => 'setFrom', 'to' => 'setTo'
+        ];
     }
 }

@@ -18,6 +18,7 @@ class InterfaceUnit extends DataType
      */
     protected $codeElement;
 
+
     /**
      * Get the value of codeElement
      *
@@ -25,9 +26,21 @@ class InterfaceUnit extends DataType
      */
     public function getCodeElement()
     {
-        if (!$this->codeElement) {
+        if (!is_object($this->codeElement)) {
             $this->codeElement = new CodeItemList();
         }
         return $this->codeElement;
+    }
+
+    public function addCodeElement($element)
+    {
+        $this->getCodeElement()->add($element);
+    }
+
+    public function getReferencedAttributesMap(): array
+    {
+        return  parent::getReferencedAttributesMap() + [
+            'codeElement' => 'addCodeElement'
+        ];
     }
 }

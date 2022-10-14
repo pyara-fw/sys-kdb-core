@@ -30,9 +30,7 @@ class KExtends extends AbstractCodeRelationship
     {
         if (is_a($from, DataType::class)) {
             $this->from = $from;
-            // if (is_callable($from->getCodeRelation())) {
             $from->getCodeRelation()->add($this);
-            // }
         }
 
         return $this;
@@ -55,9 +53,7 @@ class KExtends extends AbstractCodeRelationship
     {
         if (is_a($to, DataType::class)) {
             $this->to = $to;
-            // if (is_callable($to->getCodeRelation())) {
             $to->getCodeRelation()->add($this);
-            // }
         }
 
         return $this;

@@ -12,14 +12,6 @@ use SysKDB\kdm\lib\CodeItemList;
  */
 class ClassUnit extends DataType
 {
-    public function getReferencedAttributesMap(): array
-    {
-        return  parent::getReferencedAttributesMap() + [
-            'codeElement' => 'addCodeElement', 'owner' => 'setOwner',
-            'ownedElements' => 'addOwnedElements'
-        ];
-    }
-
     /**
      * The indicator of an abstract class
      *
@@ -76,8 +68,10 @@ class ClassUnit extends DataType
         $this->getCodeElement()->add($element);
     }
 
-    public function addOwnedElements($element)
+    public function getReferencedAttributesMap(): array
     {
-        $this->getOwnedElements()->add($element);
+        return  parent::getReferencedAttributesMap() + [
+            'codeElement' => 'addCodeElement'
+        ];
     }
 }

@@ -4,6 +4,7 @@ namespace  SysKDB\kdm\code;
 
 use SysKDB\kdm\core\KDMEntity;
 use SysKDB\kdm\lib\AbstractCodeRelationshipList;
+use SysKDB\kdm\lib\CodeItemList;
 use SysKDB\kdm\lib\CommentUnitList;
 use SysKDB\kdm\source\SourceRef;
 
@@ -111,5 +112,19 @@ abstract class AbstractCodeElement extends KDMEntity
             $this->codeRelation = new AbstractCodeRelationshipList();
         }
         return $this->codeRelation;
+    }
+
+
+    public function addOwnedElements($element)
+    {
+        $this->getOwnedElements()->add($element);
+    }
+
+    public function getReferencedAttributesMap(): array
+    {
+        return  parent::getReferencedAttributesMap() + [
+            'owner' => 'setOwner',
+            'ownedElements' => 'addOwnedElements'
+        ];
     }
 }

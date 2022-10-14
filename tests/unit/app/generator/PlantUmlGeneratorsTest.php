@@ -13,7 +13,10 @@ use SysKDB\kdb\repository\util\KDB2KDMUtil;
 use SysKDB\kdm\code\ClassUnit;
 use SysKDB\kdm\code\CommentUnit;
 use SysKDB\kdm\code\ExportKind;
+use SysKDB\kdm\code\IntegerType;
+use SysKDB\kdm\code\InterfaceUnit;
 use SysKDB\kdm\code\KExtends;
+use SysKDB\kdm\code\Kimplements;
 use SysKDB\kdm\code\MemberUnit;
 use SysKDB\kdm\code\MethodKind;
 use SysKDB\kdm\code\MethodUnit;
@@ -24,7 +27,7 @@ use SysKDB\kdm\code\StringType;
  * [x] Simple class
  * [x] Two classes, with inheritance
  * [x] Abstract class
- * [ ] Two classes, implementing an interface
+ * [x] Two classes, and one implementing an interface
  * [ ] A class associated to another
  *
  */
@@ -39,6 +42,7 @@ class PlantUmlGeneratorsTest extends TestCase
         return [
             $this->buildAssets01(),
             $this->buildAssets02(),
+            $this->buildAssets03(),
         ];
     }
 
@@ -131,16 +135,10 @@ class PlantUmlGeneratorsTest extends TestCase
         // ------------------
 
         $tests[] = function ($output, $assets, $self) {
-            $expectedOutput = <<<EOD
-class MyClass {
-    # String myMethod1()
-   {abstract} + String myMethod2()
-}
-
-
-EOD;
-
-            $self->assertEquals($expectedOutput, $output);
+            $self->assertStringContainsString('class MyClass {', $output);
+            $self->assertStringContainsString('# String myMethod1()', $output);
+            $self->assertStringContainsString('{abstract} + String myMethod2()', $output);
+            $self->assertStringContainsString('}', $output);
         };
 
 
@@ -207,22 +205,108 @@ EOD;
         // ------------------
 
         $tests[] = function ($output, $assets, $self) {
-            $expectedOutput = <<<EOD
-{abstract} class MyParentClass {
-    # String tag
-    # String location
-}
+            $self->assertStringContainsString('abstract class MyParentClass {', $output);
+            $self->assertStringContainsString('# String tag', $output);
+            $self->assertStringContainsString('# String location', $output);
 
-class MyClass2 extends MyParentClass {
-    # String myMethod1()
-    + String myMethod2()
-}
+            $self->assertStringContainsString('class MyClass2 extends MyParentClass {', $output);
+            $self->assertStringContainsString('# String myMethod1()', $output);
+            $self->assertStringContainsString('+ String myMethod2()', $output);
+        };
 
 
-EOD;
+        return [$assets, $tests];
+    }
+
+    public function buildAssets03(): array
+    {
+        $assets = [];
+        $tests = [];
 
 
-            $self->assertEquals($expectedOutput, $output);
+
+
+        $assets['interface1'] = new InterfaceUnit();
+        $assets['interface1']->setName('MyFirstInterface');
+
+        $assets['interface1.method1'] = new MethodUnit();
+        $assets['interface1.method1']->setName('myInterfaceMethod1');
+        $assets['interface1.method1']->setOwner($assets['interface1']);
+        $assets['interface1.method1']->setDataType(new IntegerType());
+        $assets['interface1.method1']->setExportKind(new ExportKind(ExportKind::PUBLIC));
+
+        $assets['interface1']->getCodeElement()->add($assets['interface1.method1']);
+
+
+
+        $assets['parentClass'] = new ClassUnit();
+        $assets['parentClass']->setName('MyParentClass');
+        $assets['parentClass']->setIsAbstract(true);
+
+        $assets['commentUnit1'] = new CommentUnit();
+        $assets['commentUnit1']->setText('// @type string');
+
+        $assets['attribute1'] = new MemberUnit();
+        $assets['attribute1']->setName('tag');
+        $assets['attribute1']->setType(new StringType());
+        $assets['attribute1']->setExport(new ExportKind(ExportKind::PROTECTED));
+        $assets['attribute1']->getComment()->add($assets['commentUnit1']);
+        $assets['attribute1']->setOwner($assets['parentClass']);
+
+
+        $assets['commentUnit2'] = new CommentUnit();
+        $assets['commentUnit2']->setText('/'."* \n * It is a location code. \n *".'/');
+
+        $assets['attribute2'] = new MemberUnit();
+        $assets['attribute2']->setName('location');
+        $assets['attribute2']->setType(new StringType());
+        $assets['attribute2']->setExport(new ExportKind(ExportKind::PROTECTED));
+        $assets['attribute2']->getComment()->add($assets['commentUnit2']);
+        $assets['attribute2']->setOwner($assets['parentClass']);
+
+        $assets['myClass'] = new ClassUnit();
+        $assets['myClass']->setName('MyClass2');
+
+        $assets['myClass_extends_parentClass'] = new KExtends();
+        $assets['myClass_extends_parentClass']->setChild($assets['myClass']);
+        $assets['myClass_extends_parentClass']->setParent($assets['parentClass']);
+
+        $assets['myClass_implements_interface1'] = new Kimplements();
+        $assets['myClass_implements_interface1']->setFrom($assets['myClass']);
+        $assets['myClass_implements_interface1']->setTo($assets['interface1']);
+
+        $assets['method1'] = new MethodUnit();
+        $assets['method1']->setName('myMethod1');
+        $assets['method1']->setOwner($assets['myClass']);
+        $assets['method1']->setDataType(StringType::getInstance());
+        $assets['method1']->setExportKind(new ExportKind(ExportKind::PROTECTED));
+
+        $assets['myClass']->getCodeElement()->add($assets['method1']);
+
+        $assets['method2'] = new MethodUnit();
+        $assets['method2']->setName('myMethod2');
+        $assets['method2']->setOwner($assets['myClass']);
+        $assets['method2']->setDataType(StringType::getInstance());
+        $assets['method2']->setExportKind(new ExportKind(ExportKind::PUBLIC));
+
+        $assets['myClass']->getCodeElement()->add($assets['method2']);
+
+        // ==================
+        // Tests section
+        // ------------------
+
+        $tests[] = function ($output, $assets, $self) {
+            $self->assertStringContainsString('interface MyFirstInterface', $output);
+            $self->assertStringContainsString('MyFirstInterface : + Integer myInterfaceMethod1()', $output);
+            $self->assertStringContainsString('MyFirstInterface <|.. MyClass2', $output);
+
+            $self->assertStringContainsString('abstract class MyParentClass', $output);
+            $self->assertStringContainsString('# String tag', $output);
+            $self->assertStringContainsString('# String location', $output);
+
+            $self->assertStringContainsString('class MyClass2 extends MyParentClass', $output);
+            $self->assertStringContainsString('# String myMethod1()', $output);
+            $self->assertStringContainsString('+ String myMethod2()', $output);
         };
 
 
