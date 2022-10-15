@@ -465,6 +465,8 @@ class PlantUmlGeneratorsTest extends TestCase
 
             $self->assertStringContainsString('Car -- "part" Part', $output);
             $self->assertStringContainsString('- SysKDB\kdm\code\TemplateUnit externalReference', $output);
+
+            $self->assertStringContainsString('Driver --  Ride', $output);
         };
 
 
