@@ -135,6 +135,9 @@ class PlantUmlGeneratorsTest extends TestCase
         // ------------------
 
         $tests[] = function ($output, $assets, $self) {
+            // echo "\n\n $output\n";
+            // // exit;
+
             $self->assertStringContainsString('class MyClass {', $output);
             $self->assertStringContainsString('# String myMethod1()', $output);
             $self->assertStringContainsString('{abstract} + String myMethod2()', $output);
