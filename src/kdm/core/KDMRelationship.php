@@ -94,4 +94,12 @@ class KDMRelationship extends ModelElement
             $to->getInbound()->add($this);
         }
     }
+
+    public function getReferencedAttributesMap(): array
+    {
+        return  parent::getReferencedAttributesMap() + [
+            'to' => 'setTo',
+            'from' => 'setFrom'
+        ];
+    }
 }

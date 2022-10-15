@@ -120,11 +120,17 @@ abstract class AbstractCodeElement extends KDMEntity
         $this->getOwnedElements()->add($element);
     }
 
+    public function addCodeRelation($element)
+    {
+        $this->getCodeRelation()->add($element);
+    }
+
     public function getReferencedAttributesMap(): array
     {
         return  parent::getReferencedAttributesMap() + [
             'owner' => 'setOwner',
-            'ownedElements' => 'addOwnedElements'
+            'ownedElements' => 'addOwnedElements',
+            'codeRelation' => 'addCodeRelation'
         ];
     }
 }

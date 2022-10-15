@@ -135,9 +135,6 @@ class PlantUmlGeneratorsTest extends TestCase
         // ------------------
 
         $tests[] = function ($output, $assets, $self) {
-            // echo "\n\n $output\n";
-            // // exit;
-
             $self->assertStringContainsString('class MyClass {', $output);
             $self->assertStringContainsString('# String myMethod1()', $output);
             $self->assertStringContainsString('{abstract} + String myMethod2()', $output);
@@ -327,8 +324,6 @@ class PlantUmlGeneratorsTest extends TestCase
             $self->assertStringContainsString('class MyClass2 extends MyParentClass', $output);
             $self->assertStringContainsString('# String myMethod1()', $output);
             $self->assertStringContainsString('+ String myMethod2()', $output);
-
-            // echo "\n\n$output\n\n";
         };
 
 
@@ -470,8 +465,6 @@ class PlantUmlGeneratorsTest extends TestCase
 
             $self->assertStringContainsString('Car -- "part" Part', $output);
             $self->assertStringContainsString('- SysKDB\kdm\code\TemplateUnit externalReference', $output);
-
-            // echo "\n\n$output\n\n";
         };
 
 
