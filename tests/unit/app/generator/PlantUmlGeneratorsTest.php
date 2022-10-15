@@ -3,7 +3,6 @@
 namespace tests\unit\Pyara\app\generator;
 
 use PHPUnit\Framework\TestCase;
-use Pyara\app\generator\Generator;
 use Pyara\app\generator\providers\PlantUML;
 use SysKDB\kdb\repository\adapter\InMemoryAdapter;
 use SysKDB\kdb\repository\DataSet;
