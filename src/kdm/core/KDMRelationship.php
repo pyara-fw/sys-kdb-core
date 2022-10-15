@@ -36,7 +36,12 @@ class KDMRelationship extends ModelElement
     public function setFrom(KDMEntity $from)
     {
         $this->from = $from;
-
+        if (method_exists($from, 'getCodeRelation')) {
+            if (is_object($from->getCodeRelation())) {
+                $from->getCodeRelation()->add($this);
+                $from->getOutbound()->add($this);
+            }
+        }
         return $this;
     }
 
@@ -60,6 +65,13 @@ class KDMRelationship extends ModelElement
     public function setTo(KDMEntity $to)
     {
         $this->to = $to;
+        if (method_exists($to, 'getCodeRelation')) {
+            if (is_object($to->getCodeRelation())) {
+                $to->getCodeRelation()->add($this);
+                $to->getInbound()->add($this);
+            }
+        }
+
 
         return $this;
     }
