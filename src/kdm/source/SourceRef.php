@@ -89,7 +89,7 @@ class SourceRef extends Element
      */
     public function getSourceRegions()
     {
-        if (!$this->sourceRegions) {
+        if (!is_object($this->sourceRegions)) {
             $this->sourceRegions = new SourceRegionList();
         }
         return $this->sourceRegions;

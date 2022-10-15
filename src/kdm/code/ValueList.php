@@ -24,7 +24,7 @@ class ValueList extends ValueElement
      */
     public function getValueElement()
     {
-        if (!$this->valueElement) {
+        if (!is_object($this->valueElement)) {
             $this->valueElement = new ValueElementList();
         }
         return $this->valueElement;

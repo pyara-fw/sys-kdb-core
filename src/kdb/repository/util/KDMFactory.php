@@ -11,7 +11,12 @@ class KDMFactory
     {
         $record[Constants::STATUS_PROCESSING] = true;
 
-        $className = substr($oid, 0, strpos($oid, ':')); // use getInternalClassName
+        if ($record[Constants::CLASSNAME]) {
+            $className = $record[Constants::CLASSNAME];
+        } else {
+            $className = substr($oid, 0, strpos($oid, ':')); // use getInternalClassName
+        }
+
         $obj = new $className();
         $obj->setProcessingStatus(Element::STATUS_OPEN);
 

@@ -33,7 +33,7 @@ class Module extends CodeItem
      */
     public function getCodeElement()
     {
-        if (!$this->codeElement) {
+        if (!is_object($this->codeElement)) {
             $this->codeElement = new AbstractCodeElementList();
         }
         return $this->codeElement;

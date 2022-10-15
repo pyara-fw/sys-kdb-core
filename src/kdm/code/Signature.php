@@ -21,7 +21,7 @@ class Signature extends DataType
      */
     public function getParameterUnit()
     {
-        if (!$this->parameterUnit) {
+        if (!is_object($this->parameterUnit)) {
             $this->parameterUnit = new ParameterUnitList();
         }
         return $this->parameterUnit;

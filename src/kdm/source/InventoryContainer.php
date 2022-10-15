@@ -25,7 +25,7 @@ class InventoryContainer extends AbstractInventoryElement
      */
     public function getInventoryElement()
     {
-        if (!$this->inventoryElement) {
+        if (!is_object($this->inventoryElement)) {
             $this->inventoryElement = new AbstractInventoryElementList();
         }
         return $this->inventoryElement;

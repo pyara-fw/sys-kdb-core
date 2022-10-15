@@ -71,7 +71,7 @@ abstract class AbstractCodeElement extends KDMEntity
      */
     public function getComment()
     {
-        if (!$this->comment) {
+        if (!is_object($this->comment)) {
             $this->comment = new CommentUnitList();
         }
         return $this->comment;

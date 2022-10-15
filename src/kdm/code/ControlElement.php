@@ -56,7 +56,7 @@ class ControlElement extends ComputationalObject
      */
     public function getCodeElement()
     {
-        if (!$this->codeElement) {
+        if (!is_object($this->codeElement)) {
             $this->codeElement = new AbstractCodeElementList();
         }
         return $this->codeElement;

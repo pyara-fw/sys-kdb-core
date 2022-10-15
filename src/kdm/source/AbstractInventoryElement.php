@@ -67,7 +67,7 @@ abstract class AbstractInventoryElement extends KDMEntity
      */
     public function getDependencies()
     {
-        if (!$this->dependencies) {
+        if (!is_object($this->dependencies)) {
             $this->dependencies = new AbstractInventoryRelationshipList();
         }
         return $this->dependencies;
@@ -94,7 +94,7 @@ abstract class AbstractInventoryElement extends KDMEntity
      */
     public function getDependents()
     {
-        if (!$this->dependents) {
+        if (!is_object($this->dependents)) {
             $this->dependents = new AbstractInventoryRelationshipList();
         }
         return $this->dependents;

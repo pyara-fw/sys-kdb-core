@@ -24,7 +24,7 @@ trait RelationshipEntityTrait
      */
     public function getInbound(): KDMRelationshipList
     {
-        if (!$this->inbound) {
+        if (!is_object($this->inbound)) {
             $this->inbound = new KDMRelationshipList();
         }
         return $this->inbound;
@@ -35,7 +35,7 @@ trait RelationshipEntityTrait
      */
     public function getOutbound(): KDMRelationshipList
     {
-        if (!$this->outbound) {
+        if (!is_object($this->outbound)) {
             $this->outbound = new KDMRelationshipList();
         }
         return $this->outbound;

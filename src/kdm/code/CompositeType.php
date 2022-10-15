@@ -24,7 +24,7 @@ class CompositeType extends DataType
      */
     public function getItem()
     {
-        if (!$this->item) {
+        if (!is_object($this->item)) {
             $this->item = new ItemUnitList();
         }
         return $this->item;

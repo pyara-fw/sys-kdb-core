@@ -3,7 +3,6 @@
 namespace  SysKDB\kdm\code;
 
 use SysKDB\kdm\core\KDMEntity;
-use SysKDB\kdm\lib\omg\mof\DataType;
 
 /**
  * The HasType is a specific meta-model element that represents semantic relation

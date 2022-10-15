@@ -65,7 +65,7 @@ class KDMEntity extends ModelElement
      */
     public function getGroup(): KDMEntityList
     {
-        if (!$this->group) {
+        if (!is_object($this->group)) {
             $this->group = new KDMEntityList();
         }
         return $this->group;

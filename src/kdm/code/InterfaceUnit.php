@@ -3,7 +3,6 @@
 namespace  SysKDB\kdm\code;
 
 use SysKDB\kdm\lib\CodeItemList;
-use SysKDB\kdm\lib\omg\mof\DataType;
 
 /**
  * The InterfaceUnit is a meta-model element that represents the

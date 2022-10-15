@@ -26,7 +26,7 @@ class NamespaceUnit extends CodeItem
      */
     public function getGroupedCode()
     {
-        if (!$this->groupedCode) {
+        if (!is_object($this->groupedCode)) {
             $this->groupedCode = new CodeItemList();
         }
         return $this->groupedCode;
