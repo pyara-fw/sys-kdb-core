@@ -17,10 +17,14 @@ use SysKDB\kdm\code\IntegerType;
 use SysKDB\kdm\code\InterfaceUnit;
 use SysKDB\kdm\code\KExtends;
 use SysKDB\kdm\code\Kimplements;
+use SysKDB\kdm\code\KinstanceOf;
 use SysKDB\kdm\code\MemberUnit;
 use SysKDB\kdm\code\MethodKind;
 use SysKDB\kdm\code\MethodUnit;
 use SysKDB\kdm\code\StringType;
+use SysKDB\kdm\code\TemplateUnit;
+use SysKDB\kdm\core\KDMRelationship;
+use SysKDB\kdm\kdm\Attribute;
 
 /**
  * TODO
@@ -43,6 +47,7 @@ class PlantUmlGeneratorsTest extends TestCase
             $this->buildAssets01(),
             $this->buildAssets02(),
             $this->buildAssets03(),
+            $this->buildAssets04(),
         ];
     }
 
@@ -66,10 +71,6 @@ class PlantUmlGeneratorsTest extends TestCase
         // Do the same with data converted from KDB to KDM format as well.
         $wholeDataSet = $this->repository->getAdapter()->getAll();
         $posProcessedAssets = ConvertUtil::convertKDB_2_KDM($wholeDataSet);
-
-        // @TODO : the convertKDB_2_KDM is not converting properly the
-        // passed data. Fields like 'kind', 'exportKind' and 'dataType'
-        // are missing in MethodUnit.
 
         $this->assertTrue(is_array($posProcessedAssets));
 
@@ -237,6 +238,15 @@ class PlantUmlGeneratorsTest extends TestCase
 
         $assets['interface1']->getCodeElement()->add($assets['interface1.method1']);
 
+        $assets['interface2'] = new InterfaceUnit();
+        $assets['interface2']->setName('MySecondInterface');
+
+        $assets['interface3'] = new InterfaceUnit();
+        $assets['interface3']->setName('MyThirdInterface');
+
+        $assets['MySecondInterface_extends_MyThirdInterface'] = new KExtends();
+        $assets['MySecondInterface_extends_MyThirdInterface']->setChild($assets['interface3']);
+        $assets['MySecondInterface_extends_MyThirdInterface']->setParent($assets['interface2']);
 
 
         $assets['parentClass'] = new ClassUnit();
@@ -275,6 +285,10 @@ class PlantUmlGeneratorsTest extends TestCase
         $assets['myClass_implements_interface1']->setFrom($assets['myClass']);
         $assets['myClass_implements_interface1']->setTo($assets['interface1']);
 
+        $assets['myClass_implements_interface2'] = new Kimplements();
+        $assets['myClass_implements_interface2']->setFrom($assets['myClass']);
+        $assets['myClass_implements_interface2']->setTo($assets['interface2']);
+
         $assets['method1'] = new MethodUnit();
         $assets['method1']->setName('myMethod1');
         $assets['method1']->setOwner($assets['myClass']);
@@ -299,6 +313,10 @@ class PlantUmlGeneratorsTest extends TestCase
             $self->assertStringContainsString('interface MyFirstInterface', $output);
             $self->assertStringContainsString('MyFirstInterface : + Integer myInterfaceMethod1()', $output);
             $self->assertStringContainsString('MyFirstInterface <|.. MyClass2', $output);
+            $self->assertStringContainsString('MySecondInterface <|.. MyClass2', $output);
+
+            $self->assertStringContainsString('interface MySecondInterface', $output);
+            $self->assertStringContainsString('interface MyThirdInterface', $output);
 
             $self->assertStringContainsString('abstract class MyParentClass', $output);
             $self->assertStringContainsString('# String tag', $output);
@@ -307,6 +325,8 @@ class PlantUmlGeneratorsTest extends TestCase
             $self->assertStringContainsString('class MyClass2 extends MyParentClass', $output);
             $self->assertStringContainsString('# String myMethod1()', $output);
             $self->assertStringContainsString('+ String myMethod2()', $output);
+
+            // echo "\n\n$output\n\n";
         };
 
 
@@ -326,5 +346,133 @@ class PlantUmlGeneratorsTest extends TestCase
             $list = ConvertUtil::convertKDM_2_KDB($item);
             $this->repository->import($list);
         }
+    }
+
+
+
+    public function buildAssets04(): array
+    {
+        $assets = [];
+        $tests = [];
+
+        $assets['classPart'] = new ClassUnit();
+        $assets['classPart']->setName('Part');
+
+
+        $assets['classVehicle'] = new ClassUnit();
+        $assets['classVehicle']->setName('Vehicle');
+        $assets['classVehicle']->setIsAbstract(true);
+
+        $assets['classCar'] = new ClassUnit();
+        $assets['classCar']->setName('Car');
+
+        $assets['classCar_extends_classVehicle'] = new KExtends();
+        $assets['classCar_extends_classVehicle']->setChild($assets['classCar']);
+        $assets['classCar_extends_classVehicle']->setParent($assets['classVehicle']);
+
+        $assets['attribute1'] = new MemberUnit();
+        $assets['attribute1']->setName('part');
+        $assets['attribute1']->setType($assets['classPart']);
+        $assets['attribute1']->setExport(new ExportKind(ExportKind::PROTECTED));
+        $assets['attribute1']->setOwner($assets['classCar']);
+
+
+
+        $assets['attribute2'] = new MemberUnit();
+        $assets['attribute2']->setName('externalReference');
+
+        $externalAttribute = new TemplateUnit();
+        $externalAttribute->setName('ExternalClass');
+
+        $assets['attribute2']->setType($externalAttribute);
+        $assets['attribute2']->setExport(new ExportKind(ExportKind::PRIVATE));
+        $assets['attribute2']->setOwner($assets['classCar']);
+
+
+        $assets['classEntity'] = new ClassUnit();
+        $assets['classEntity']->setName('Entity');
+
+
+        $assets['attribute3'] = new MemberUnit();
+        $assets['attribute3']->setName('name');
+        $assets['attribute3']->setType(StringType::getInstance());
+        $assets['attribute3']->setExport(new ExportKind(ExportKind::PROTECTED));
+        $assets['attribute3']->setOwner($assets['classEntity']);
+
+
+        $assets['classDriver'] = new ClassUnit();
+        $assets['classDriver']->setName('Driver');
+
+        $assets['classOwner'] = new ClassUnit();
+        $assets['classOwner']->setName('Owner');
+
+        $assets['classDriver_extends_classEntity'] = new KExtends();
+        $assets['classDriver_extends_classEntity']->setChild($assets['classDriver']);
+        $assets['classDriver_extends_classEntity']->setParent($assets['classEntity']);
+
+        $assets['classOwner_extends_classEntity'] = new KExtends();
+        $assets['classOwner_extends_classEntity']->setChild($assets['classOwner']);
+        $assets['classOwner_extends_classEntity']->setParent($assets['classEntity']);
+
+
+
+        $assets['attribute4'] = new MemberUnit();
+        $assets['attribute4']->setName('owner');
+        $assets['attribute4']->setType($assets['classOwner']);
+        $assets['attribute4']->setExport(new ExportKind(ExportKind::PROTECTED));
+        $assets['attribute4']->setOwner($assets['classCar']);
+
+        $assets['attribute5'] = new MemberUnit();
+        $assets['attribute5']->setName('driver');
+        $assets['attribute5']->setType($assets['classDriver']);
+        $assets['attribute5']->setExport(new ExportKind(ExportKind::PROTECTED));
+        $assets['attribute5']->setOwner($assets['classCar']);
+
+
+        $assets['classRide'] = new ClassUnit();
+        $assets['classRide']->setName('Ride');
+
+        $tpl = new TemplateUnit();
+
+        $atr = new Attribute();
+        $atr->setTag('cardinality');
+        $atr->setValue('1');
+        $tpl->getAttributes()->add($atr);
+
+        $atr = new Attribute();
+        $atr->setTag('formatEndpoint');
+        $atr->setValue('diamond');
+        $tpl->getAttributes()->add($atr);
+
+
+        $tpl->setName($assets['classRide']->getName());
+        $tpl->setOwner($assets['classRide']);
+
+        $rel = new KDMRelationship();
+        // $rel->setFrom($tpl);
+        $rel->setFrom($assets['classRide']);
+        $rel->setTo($assets['classDriver']);
+        $assets['classRide_association_classDriver'] = $rel;
+
+        // ==================
+        // Tests section
+        // ------------------
+
+        $tests[] = function ($output, $assets, $self) {
+            $self->assertStringContainsString('class Part {', $output);
+
+            $self->assertStringContainsString('abstract class Vehicle', $output);
+
+            $self->assertStringContainsString('class Car extends Vehicle', $output);
+            $self->assertStringContainsString('# Part part', $output);
+
+            $self->assertStringContainsString('Car -- "part" Part', $output);
+            $self->assertStringContainsString('- SysKDB\kdm\code\TemplateUnit externalReference', $output);
+
+            // echo "\n\n$output\n\n";
+        };
+
+
+        return [$assets, $tests];
     }
 }
