@@ -61,6 +61,21 @@ class PreProcessor
     }
 
 
+    public function processClass(&$class)
+    {
+        $this->processClassRelations($class);
+        $this->processClassMethods($class);
+        $this->processClassAttributes($class);
+    }
+
+
+    public function processInterface(&$interface)
+    {
+        $this->processInterfaceRelations($interface);
+        $this->processClassMethods($interface);
+    }
+
+
     public function processClassMethods(&$class)
     {
         $class['methodsList'] = [];

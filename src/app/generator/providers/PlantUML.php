@@ -79,8 +79,9 @@ class PlantUML
     {
         $templateInterface = <<<EOD
 interface {= name }{if extendsFromName } extends {= extendsFromName}{/if}
-{= newline}
-{for method in methodsList}{= name } : {= method.visibility} {= method.dataType} {= method.name }(){= newline}{/for}
+
+{for method in methodsList}{= name } : {= method.visibility} {= method.dataType} {= method.name }()
+{/for}
 
 {for implementation in implementations }
 {= name } <|.. {= implementation.name}
@@ -93,9 +94,7 @@ EOD;
         $listInterfaces = $this->getPreProcessor()->getDataSet()->findByKeyValueAttribute(Constants::INTERNAL_CLASS_NAME, InterfaceUnit::class);
 
         foreach ($listInterfaces as $interface) {
-            $interface['newline'] = "\n";
-            $this->getPreProcessor()->processInterfaceRelations($interface);
-            $this->getPreProcessor()->processClassMethods($interface);
+            $this->getPreProcessor()->processInterface($interface);
             $response .= $this->getTemplateProcessor()->apply($interface).  "\n";
         }
 
@@ -109,8 +108,9 @@ EOD;
 {if isAbstract == true}abstract {/if}class {= name } {if extendsFromName }extends {= extendsFromName} {/if}{
 {for attribute in attributesList}
     {= attribute.visibility} {= attribute.type} {= attribute.name }
-{/for}{= newline}
-{for method in methodsList}   {echoBracketsIfTrue text="abstract" compare=method.isAbstract} {= method.visibility} {= method.dataType} {= method.name }(){= newline}{/for}}
+{/for}
+{for method in methodsList}   {echoBracketsIfTrue text="abstract" compare=method.isAbstract} {= method.visibility} {= method.dataType} {= method.name }()
+{/for}}
 
 {for association in associations} 
 {= association.origin} -- {if association.destinationSideLabel}"{= association.destinationSideLabel}"{/if} {= association.destination }
@@ -125,10 +125,7 @@ EOD;
         $listClasses = $this->getPreProcessor()->getDataSet()->findByKeyValueAttribute(Constants::INTERNAL_CLASS_NAME, ClassUnit::class);
 
         foreach ($listClasses as $class) {
-            $class['newline'] = "\n";
-            $this->getPreProcessor()->processClassRelations($class);
-            $this->getPreProcessor()->processClassMethods($class);
-            $this->getPreProcessor()->processClassAttributes($class);
+            $this->getPreProcessor()->processClass($class);
             $response .= $this->getTemplateProcessor()->apply($class).  "\n";
         }
 
