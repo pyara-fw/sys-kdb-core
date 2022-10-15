@@ -3,12 +3,12 @@
 namespace SysKDB\kdm\core;
 
 use SysKDB\kdb\KDB;
+use SysKDB\kdm\lib\AttributeList;
 use SysKDB\kdm\lib\Constants;
-use SysKDB\kdm\lib\HasOID as LibHasOID;
+use SysKDB\kdm\lib\HasOID;
 use SysKDB\lib\dao\PersistentObject;
 use SysKDB\kdm\lib\DoesCompare;
 use SysKDB\kdm\lib\DoesSerialize;
-use SysKDB\lib\Constants as LibConstants;
 
 /**
  * @author Eduardo Luz <eduardo @ eduardo-luz.com>
@@ -16,7 +16,7 @@ use SysKDB\lib\Constants as LibConstants;
  */
 abstract class Element implements PersistentObject
 {
-    use LibHasOID;
+    use HasOID;
     use DoesSerialize;
     use DoesCompare;
 
@@ -27,6 +27,11 @@ abstract class Element implements PersistentObject
 
     protected $internalClassName;
 
+
+    /**
+     * @var AttributeList
+     */
+    protected $attribute;
 
     public function store(): PersistentObject
     {
@@ -89,5 +94,18 @@ abstract class Element implements PersistentObject
     public function getInternalClassName()
     {
         return $this->internalClassName;
+    }
+
+    /**
+     * Get the value of attribute
+     *
+     * @return  AttributeList
+     */
+    public function getAttributes()
+    {
+        if (!is_object($this->attribute)) {
+            $this->attribute = new AttributeList();
+        }
+        return $this->attribute;
     }
 }
