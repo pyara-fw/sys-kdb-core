@@ -41,4 +41,12 @@ class MemberUnit extends DataElement
 
         return $this;
     }
+
+
+    public function getReferencedAttributesMap(): array
+    {
+        return  parent::getReferencedAttributesMap() + [
+            'export' => 'setExport',
+        ];
+    }
 }

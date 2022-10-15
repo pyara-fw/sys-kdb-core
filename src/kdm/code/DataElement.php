@@ -111,4 +111,14 @@ class DataElement extends ComputationalObject
 
         return $this;
     }
+
+
+    public function getReferencedAttributesMap(): array
+    {
+        return  parent::getReferencedAttributesMap() + [
+            'type' => 'setType',
+            'size' => 'setSize',
+            'ext' => 'setExt',
+        ];
+    }
 }

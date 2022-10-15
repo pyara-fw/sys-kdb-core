@@ -61,4 +61,19 @@ class ControlElement extends ComputationalObject
         }
         return $this->codeElement;
     }
+
+
+    public function setCodeElement($codeElement)
+    {
+        $this->codeElement = $codeElement;
+    }
+
+
+    public function getReferencedAttributesMap(): array
+    {
+        return  parent::getReferencedAttributesMap() + [
+            'dataType' => 'setDataType',
+            'codeElement' => 'setCodeElement'
+        ];
+    }
 }
