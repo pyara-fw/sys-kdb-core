@@ -7,12 +7,12 @@ class KDMRelationship extends ModelElement
     /**
      * @var KDMEntity
      */
-    protected $from;
+    protected KDMEntity $from;
 
     /**
      * @var KDMEntity
      */
-    protected $to;
+    protected KDMEntity $to;
 
 
 
@@ -21,7 +21,7 @@ class KDMRelationship extends ModelElement
      *
      * @return  KDMEntity
      */
-    public function getFrom()
+    public function getFrom(): KDMEntity
     {
         return $this->from;
     }
@@ -33,7 +33,7 @@ class KDMRelationship extends ModelElement
      *
      * @return  self
      */
-    public function setFrom(KDMEntity $from)
+    public function setFrom(KDMEntity $from): self
     {
         $this->from = $from;
 
@@ -45,7 +45,7 @@ class KDMRelationship extends ModelElement
      *
      * @return  KDMEntity
      */
-    public function getTo()
+    public function getTo(): KDMEntity
     {
         return $this->to;
     }
@@ -57,7 +57,7 @@ class KDMRelationship extends ModelElement
      *
      * @return  self
      */
-    public function setTo(KDMEntity $to)
+    public function setTo(KDMEntity $to): self
     {
         $this->to = $to;
 

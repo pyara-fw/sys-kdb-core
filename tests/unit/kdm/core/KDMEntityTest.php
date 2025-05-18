@@ -26,18 +26,19 @@ class KDMEntityTest extends TestCase
 
     public function test_entity_with_group()
     {
+        $entityNameTemplate = 'Entity%d';
         $entity = new KDMEntity();
 
         for ($i=0;$i<10;$i++) {
             $e = new KDMEntity();
-            $e->setName($i);
-            $entity->getGroup()->add($e);
+            $e->setName(sprintf($entityNameTemplate, $i));
+            ($entity->getGroup())->add($e);
         }
 
         $iterator = $entity->getGroup();
 
         foreach ($iterator as $k => $item) {
-            $this->assertEquals($k, $item->getName());
+            $this->assertEquals(sprintf($entityNameTemplate, $k), $item->getName());
         }
     }
 

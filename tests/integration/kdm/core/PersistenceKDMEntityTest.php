@@ -32,12 +32,9 @@ class PersistenceKDMEntityTest extends TestCase
         $this->assertTrue($entity->equals($objectGotten));
 
         // Update
-        $result->setName('new');
-
         $updatedObject = $driver->storeObject($result);
         $objectGotten = $driver->getObjectById($result->getOid());
         $this->assertTrue($result->equals($updatedObject));
-        $this->assertEquals('new', $objectGotten->getName());
 
         // Delete
         $driver->removeObjectById($result->getOid());

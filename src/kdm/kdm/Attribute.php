@@ -20,28 +20,28 @@ class Attribute extends Element
      * semantics that are applicable to the contents of the value attribute.
      * @var string
      */
-    protected $tag;
+    protected string $tag;
 
 
     /**
      * Contains the current value of the attribute.
      * @var string
      */
-    protected $value;
+    protected string $value;
 
     /**
      *
      *
      * @var Element
      */
-    protected $owner;
+    protected ?Element $owner;
 
     /**
      * Get semantics that are applicable to the contents of the value attribute.
      *
      * @return  string
      */
-    public function getTag()
+    public function getTag(): string
     {
         return $this->tag;
     }
@@ -53,7 +53,7 @@ class Attribute extends Element
      *
      * @return  self
      */
-    public function setTag(string $tag)
+    public function setTag(string $tag): self
     {
         $this->tag = $tag;
 
@@ -65,7 +65,7 @@ class Attribute extends Element
      *
      * @return  string
      */
-    public function getValue()
+    public function getValue(): string
     {
         return $this->value;
     }
@@ -77,7 +77,7 @@ class Attribute extends Element
      *
      * @return  self
      */
-    public function setValue(string $value)
+    public function setValue(string $value): self
     {
         $this->value = $value;
 
@@ -90,7 +90,7 @@ class Attribute extends Element
      *
      * @return  Element
      */
-    public function getOwner()
+    public function getOwner(): Element
     {
         return $this->owner;
     }
@@ -102,7 +102,7 @@ class Attribute extends Element
      *
      * @return  self
      */
-    public function setOwner(Element $owner)
+    public function setOwner(Element $owner): self
     {
         $this->owner = $owner;
 

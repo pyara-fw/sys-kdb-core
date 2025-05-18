@@ -97,7 +97,6 @@ class KDM2KDBTest extends TestCase
 
         // Starting the conversion and data persistence
         $adapter = new InMemoryAdapter();
-        $adapter = new MongoAdapter();
 
 
         $repository = new KDBRepository();
@@ -133,32 +132,4 @@ class KDM2KDBTest extends TestCase
     }
 
 
-
-    public function setUp(): void
-    {
-        parent::setUp();
-
-        $mongoUsername = getenv('MONGO_USERNAME');
-        $mongoPassword = getenv('MONGO_PASSWORD');
-        $mongoDatabase = getenv('MONGO_DATABASE');
-        $mongoHost = getenv('MONGO_HOST');
-
-        $this->client = new \MongoDB\Client("mongodb://$mongoUsername:$mongoPassword@$mongoHost:27017");
-
-        $bulk = new \MongoDB\Driver\BulkWrite();
-
-        $delete = [];
-        $bulk->delete($delete);
-
-        $this->client->getManager()->executeBulkWrite("${mongoDatabase}.objects", $bulk);
-    }
-
-    protected $client;
-
-    protected function tearDown(): void
-    {
-        $mongoDatabase = getenv('MONGO_DATABASE');
-        $collection = $this->client->$mongoDatabase->objects;
-        $collection->deleteMany([]);
-    }
 }

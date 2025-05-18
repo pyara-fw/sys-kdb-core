@@ -9,7 +9,7 @@ trait DoesCompare
     public function equals($toCompare): bool
     {
         if (!method_exists($toCompare, 'compareAttributesWithMe')) {
-            // exception
+            throw new \InvalidArgumentException('Object is not comparable');
         }
         $myAttributes = get_object_vars($this);
         return $toCompare->compareAttributesWithMe($myAttributes);
@@ -18,9 +18,6 @@ trait DoesCompare
     public function compareAttributesWithMe(array $attributes): bool
     {
         $myAttributes = get_object_vars($this);
-
-        // print_r([$myAttributes, $attributes]);
-        // exit;
 
         foreach ($myAttributes as $k => $v) {
             if ($k == Constants::CLASSNAME) {

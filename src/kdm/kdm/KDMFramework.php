@@ -17,14 +17,14 @@ abstract class KDMFramework extends ModelElement
      *
      * @var string
      */
-    protected $name;
+    protected string $name;
 
     /**
      * Get the value of name
      *
      * @return  string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -36,7 +36,7 @@ abstract class KDMFramework extends ModelElement
      *
      * @return  self
      */
-    public function setName(string $name)
+    public function setName(string $name): self
     {
         $this->name = $name;
 

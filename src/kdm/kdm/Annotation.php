@@ -17,21 +17,21 @@ class Annotation extends Element
      * Contains the text of the annotation to the target model element.
      * @var string
      */
-    protected $text;
+    protected string $text;
 
     /**
      *
      *
      * @var Element
      */
-    protected $owner;
+    protected Element $owner;
 
     /**
      * Get the value of owner
      *
      * @return  Element
      */
-    public function getOwner()
+    public function getOwner(): Element 
     {
         return $this->owner;
     }
@@ -43,7 +43,7 @@ class Annotation extends Element
      *
      * @return  self
      */
-    public function setOwner(Element $owner)
+    public function setOwner(Element $owner): self  
     {
         $this->owner = $owner;
 
@@ -63,7 +63,7 @@ class Annotation extends Element
      *
      * @return  string
      */
-    public function getText()
+    public function getText(): string
     {
         return $this->text;
     }
@@ -75,7 +75,7 @@ class Annotation extends Element
      *
      * @return  self
      */
-    public function setText(string $text)
+    public function setText(string $text): self
     {
         $this->text = $text;
 

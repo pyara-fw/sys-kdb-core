@@ -3,6 +3,7 @@
 namespace SysKDB\kdm\core;
 
 use SysKDB\kdm\lib\KDMEntityList;
+use SysKDB\kdm\lib\omg\mof\DataType;
 use SysKDB\kdm\lib\OwnershipEntityTrait;
 use SysKDB\kdm\lib\RelationshipEntityTrait;
 
@@ -14,7 +15,7 @@ use SysKDB\kdm\lib\RelationshipEntityTrait;
  * @author Eduardo Luz <eduardo @ eduardo-luz.com>
  * @package sysKDB
  */
-class KDMEntity extends ModelElement
+class KDMEntity extends ModelElement 
 {
     use OwnershipEntityTrait;
     use RelationshipEntityTrait;
@@ -22,24 +23,24 @@ class KDMEntity extends ModelElement
     /**
      * Entity's name
      *
-     * @var String
+     * @var string
      */
-    protected $name;
+    protected string $name;
 
 
     /**
      * @var KDMEntityList
      */
-    protected $group;
+    protected ?KDMEntityList $group = null;
 
 
 
     /**
      * Get entity's name
      *
-     * @return  String
+     * @return  string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -51,8 +52,15 @@ class KDMEntity extends ModelElement
      *
      * @return  self
      */
-    public function setName(String $name)
+    public function setName(string $name): self
     {
+        if (empty($name)) {
+            throw new \InvalidArgumentException('Entity name cannot be empty');
+        }
+        if (strlen($name) > 255) {
+            throw new \InvalidArgumentException('Entity name cannot be longer than 255 characters');
+        }
+    
         $this->name = $name;
 
         return $this;
@@ -63,7 +71,7 @@ class KDMEntity extends ModelElement
      *
      * @return KDMEntityList
      */
-    public function getGroup(): KDMEntityList
+    public function getGroup(): ?KDMEntityList
     {
         if (!$this->group) {
             $this->group = new KDMEntityList();

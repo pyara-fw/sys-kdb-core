@@ -21,9 +21,6 @@ class InventoryUtil
     public static function createRootDirectoryOnModel(InventoryModel &$model, string $path=''): Directory
     {
         static::addTraillingSlashOnPath($path);
-        // if (substr($path, -1) != '/') {
-        //     $path .= '/';
-        // }
         $root = new Directory();
         $root->setModel($model);
         $root->setPath($path);

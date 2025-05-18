@@ -45,7 +45,7 @@ class Redis extends DataAccessObject
         if (!$this->hasConfigItem(static::REDIS_HOST)) {
             throw new ConnectionException("Configuration key " .static::REDIS_HOST . " is not present. Aborting.");
         }
-        $this->connection = new \Redis();
+        $this->connection = new Redis();
         $this->connection->connect($this->getConfigItem(static::REDIS_HOST));
     }
 
